@@ -14,15 +14,15 @@ public class TrainingStrategy extends LearningStrategy
     }
 
     @Override
-    public Matrix getTrainingFeatures()
+    public Matrix getTrainingData()
     {
-        return new Matrix(getArffData(), 0, 0, getArffData().rows(), getArffData().cols() - 1);
+        return new Matrix(getArffData(), 0, 0, getTrainingSetSize(), getArffData().cols());
     }
 
     @Override
-    public Matrix getTrainingLabels()
+    public Matrix getTestingData()
     {
-        return new Matrix(getArffData(), 0, getArffData().cols() - 1, getArffData().rows(), 1);
+        return new Matrix(getArffData(), 0, 0, getTrainSize(), getArffData().cols());
     }
 
     @Override
@@ -35,5 +35,11 @@ public class TrainingStrategy extends LearningStrategy
     public Matrix getTestingLabels()
     {
         return getTrainingLabels();
+    }
+
+    @Override
+    public Matrix getValidationData()
+    {
+        return new Matrix(getArffData(), getTrainingSetSize(), 0, getValidationSetSize(), getArffData().cols());
     }
 }

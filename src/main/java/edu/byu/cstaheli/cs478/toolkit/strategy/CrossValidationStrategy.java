@@ -10,8 +10,7 @@ public class CrossValidationStrategy extends LearningStrategy
 {
     private int begin;
     private int end;
-    private Matrix trainingFeatures;
-    private Matrix trainingLabels;
+    private Matrix trainingData;
 
     public CrossValidationStrategy(LearnerData learnerData) throws Exception
     {
@@ -23,33 +22,25 @@ public class CrossValidationStrategy extends LearningStrategy
         super(learnerData);
         this.begin = begin;
         this.end = end;
-        this.trainingFeatures = new Matrix(getArffData(), 0, 0, begin, getArffData().cols() - 1);
-        this.trainingLabels = new Matrix(getArffData(), 0, getArffData().cols() - 1, begin, 1);
-        trainingLabels.add(getArffData(), end, getArffData().cols() - 1, getArffData().rows() - end);
-        trainingFeatures.add(getArffData(), end, 0, getArffData().rows() - end);
+        this.trainingData = new Matrix(getArffData(), 0, 0, begin, getArffData().cols());
+        this.trainingData.add(getArffData(), end, getArffData().cols(), getArffData().rows() - end);
     }
 
     @Override
-    public Matrix getTrainingFeatures()
+    public Matrix getTrainingData()
     {
-        return trainingFeatures;
+        return new Matrix(trainingData, 0, 0, getTrainingSetSize(), trainingData.cols());
     }
 
     @Override
-    public Matrix getTrainingLabels()
+    public Matrix getTestingData()
     {
-        return trainingLabels;
+        return new Matrix(getArffData(), begin, 0, end - begin, getArffData().cols());
     }
 
     @Override
-    public Matrix getTestingFeatures()
+    public Matrix getValidationData()
     {
-        return new Matrix(getArffData(), begin, 0, end - begin, getArffData().cols() - 1);
-    }
-
-    @Override
-    public Matrix getTestingLabels()
-    {
-        return new Matrix(getArffData(), begin, getArffData().cols() - 1, end - begin, 1);
+        return new Matrix(trainingData, getTrainingSetSize(), 0, getValidationSetSize(), trainingData.cols());
     }
 }

@@ -12,46 +12,66 @@ public class RandomStrategy extends LearningStrategy
 {
     private double trainPercent;
     private Random rand;
+    private boolean shouldShuffle;
+    private Matrix trainingData;
 
     public RandomStrategy(LearnerData learnerData) throws Exception
     {
         super(learnerData);
         rand = learnerData.getRandom();
         trainPercent = Double.parseDouble(learnerData.getEvalParameter());
-        if (trainPercent < 0 || trainPercent > 1)
+        if (getTrainPercent() < 0 || getTrainPercent() > 1)
             throw new Exception("Percentage for random evaluation must be between 0 and 1");
-        System.out.println("Percentage used for training: " + trainPercent);
-        System.out.println("Percentage used for testing: " + (1 - trainPercent));
+        System.out.println("Percentage used for training: " + getTrainPercent());
+        System.out.println("Percentage used for testing: " + (1 - getTrainPercent()));
         getArffData().shuffle(rand);
+        shouldShuffle = true;
+        trainingData = getInitialTrainingData();
+    }
+
+    private Matrix getInitialTrainingData()
+    {
+        return new Matrix(getArffData(), 0, 0, getTrainingSetSize(), getArffData().cols());
+    }
+
+    @Override
+    public Matrix getTrainingData()
+    {
+        if (shouldShuffle)
+        {
+            trainingData.shuffle(rand);
+            shouldShuffle = false;
+        }
+        return trainingData;
     }
 
     @Override
     public Matrix getTrainingFeatures()
     {
-        getArffData().shuffle(rand);
-        return new Matrix(getArffData(), 0, 0, getTrainSize(), getArffData().cols() - 1);
+        shouldShuffle = true;
+        return super.getTrainingFeatures();
     }
 
     @Override
-    public Matrix getTrainingLabels()
+    public Matrix getTestingData()
     {
-        return new Matrix(getArffData(), 0, getArffData().cols() - 1, getTrainSize(), 1);
+        return new Matrix(getArffData(), getTrainSize(), 0, getArffData().rows() - getTrainSize(), getArffData().cols());
     }
 
     @Override
-    public Matrix getTestingFeatures()
+    public Matrix getValidationData()
     {
-        return new Matrix(getArffData(), getTrainSize(), 0, getArffData().rows() - getTrainSize(), getArffData().cols() - 1);
+        return new Matrix(getArffData(), getTrainingSetSize(), 0, getValidationSetSize(), getArffData().cols());
     }
 
-    @Override
-    public Matrix getTestingLabels()
+    protected double getTrainPercent()
     {
-        return new Matrix(getArffData(), getTrainSize(), getArffData().cols() - 1, getArffData().rows() - getTrainSize(), 1);
+        return trainPercent;
     }
 
-    private int getTrainSize()
+    protected int getTrainSize()
     {
-        return (int) (trainPercent * getArffData().rows());
+        return (int) (getTrainPercent() * getArffData().rows());
     }
+
 }

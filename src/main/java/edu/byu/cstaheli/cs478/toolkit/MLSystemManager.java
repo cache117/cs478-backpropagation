@@ -137,7 +137,7 @@ public class MLSystemManager
 
         System.out.println("Calculating accuracy on separate test set...");
         System.out.println("Test set name: " + learnerData.getEvalParameter());
-        System.out.println("Number of test instances: " + ((StaticStrategy) strategy).getTestData().rows());
+        System.out.println("Number of test instances: " + strategy.getTestingData().rows());
 //        Matrix features = new Matrix(learnerData.getArffData(), 0, 0, learnerData.getArffData().rows(), learnerData.getArffData().cols() - 1);
 //        Matrix labels = new Matrix(learnerData.getArffData(), 0, learnerData.getArffData().cols() - 1, learnerData.getArffData().rows(), 1);
         double startTime = System.currentTimeMillis();
