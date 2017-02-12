@@ -19,8 +19,9 @@ public class BaselineLearner extends SupervisedLearner
     private double[] m_labels;
 
     @Override
-    public void train(Matrix features, Matrix labels)
+    public void train(LearningStrategy strategy) throws Exception
     {
+        Matrix labels = strategy.getTrainingLabels();
         m_labels = new double[labels.cols()];
         for (int i = 0; i < labels.cols(); i++)
         {
@@ -29,12 +30,6 @@ public class BaselineLearner extends SupervisedLearner
             else
                 m_labels[i] = labels.mostCommonValue(i); // nominal
         }
-    }
-
-    @Override
-    public void train(LearningStrategy strategy) throws Exception
-    {
-
     }
 
     public void predict(double[] features, double[] labels) throws Exception

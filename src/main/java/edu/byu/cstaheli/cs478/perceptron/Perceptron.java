@@ -26,12 +26,6 @@ public class Perceptron extends SupervisedLearner
     }
 
     @Override
-    public void train(Matrix features, Matrix labels) throws Exception
-    {
-
-    }
-
-    @Override
     public void train(LearningStrategy strategy) throws Exception
     {
         initWeights(strategy.getTrainingFeatures());
