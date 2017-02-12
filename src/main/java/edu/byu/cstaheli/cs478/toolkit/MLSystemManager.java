@@ -68,7 +68,7 @@ public class MLSystemManager
     private void determineEvalMethod(ArgParser parser) throws Exception
     {
         // Load the model
-        if (parser.getWantedIndex().equals(""))
+        if (parser.getWantedIndex() == null)
         {
             learner = getLearner(parser.getLearner(), getRandom());
         }
@@ -261,19 +261,19 @@ public class MLSystemManager
 
     public void completeEpoch(int epoch, double trainingAccuracy)
     {
-        try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
         {
             writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
         }
         catch (IOException e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void writeAccuraciesAndFinalWeights(double trainingAccuracy, double testingAccuracy, double[] weights)
     {
-        try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
         {
             writer.append(String.format("Accuracy\n%s, %s\n", trainingAccuracy, testingAccuracy));
             writer.append(String.format("Final Weights\n%s", getArrayString(weights)));
@@ -281,7 +281,7 @@ public class MLSystemManager
         catch (IOException e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private String getArrayString(double[] array)

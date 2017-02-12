@@ -2,6 +2,7 @@ package edu.byu.cstaheli.cs478.toolkit.strategy;
 
 import edu.byu.cstaheli.cs478.toolkit.LearnerData;
 import edu.byu.cstaheli.cs478.toolkit.Matrix;
+import edu.byu.cstaheli.cs478.toolkit.exception.MatrixException;
 
 /**
  * Created by cstaheli on 1/20/2017.
@@ -22,8 +23,14 @@ public class CrossValidationStrategy extends LearningStrategy
         super(learnerData);
         this.begin = begin;
         this.end = end;
-        this.trainingData = new Matrix(getArffData(), 0, 0, begin, getArffData().cols());
-        this.trainingData.add(getArffData(), end, getArffData().cols(), getArffData().rows() - end);
+        this.trainingData = getInitialTrainingData();
+    }
+
+    private Matrix getInitialTrainingData() throws MatrixException
+    {
+        Matrix matrix = new Matrix(getArffData(), 0, 0, begin, getArffData().cols());
+        matrix.add(getArffData(), end, 0, getArffData().rows() - end);
+        return matrix;
     }
 
     @Override
