@@ -4,6 +4,10 @@ package edu.byu.cstaheli.cs478.toolkit;
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
+import edu.byu.cstaheli.cs478.toolkit.exception.ARFFParseException;
+import edu.byu.cstaheli.cs478.toolkit.exception.IncompatibleMatrixException;
+import edu.byu.cstaheli.cs478.toolkit.exception.MatrixException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -11,16 +15,14 @@ import java.util.Map.Entry;
 
 public class Matrix
 {
+    private static double MISSING = Double.MAX_VALUE; // representation of missing values in the dataset
     // Data
     private ArrayList<double[]> m_data;
-
     // Meta-data
     private ArrayList<String> m_attr_name;
     private ArrayList<TreeMap<String, Integer>> m_str_to_enum;
     private ArrayList<TreeMap<Integer, String>> m_enum_to_str;
     private String datasetName;
-
-    private static double MISSING = Double.MAX_VALUE; // representation of missing values in the dataset
 
     // Creates a 0x0 matrix. You should call loadARFF or setSize next.
     public Matrix()
@@ -51,14 +53,14 @@ public class Matrix
     }
 
     // Adds a copy of the specified portion of that matrix to this matrix
-    public void add(Matrix that, int rowStart, int colStart, int rowCount) throws Exception
+    public void add(Matrix that, int rowStart, int colStart, int rowCount) throws MatrixException
     {
         if (colStart + cols() > that.cols())
-            throw new Exception("out of range");
+            throw new IndexOutOfBoundsException(String.format("Out of Range: %d + %d > %d", colStart, cols(), that.cols()));
         for (int i = 0; i < cols(); i++)
         {
             if (that.valueCount(colStart + i) != valueCount(i))
-                throw new Exception("incompatible relations");
+                throw new IncompatibleMatrixException(String.format("incompatible Relations: %d != %d", that.valueCount(colStart + i), valueCount(i)));
         }
         for (int j = 0; j < rowCount; j++)
         {
@@ -91,7 +93,7 @@ public class Matrix
     }
 
     // Loads from an ARFF file
-    public void loadArff(String filename) throws Exception, FileNotFoundException
+    public void loadArff(String filename) throws ARFFParseException, FileNotFoundException
     {
         m_data = new ArrayList<>();
         m_attr_name = new ArrayList<>();
@@ -150,7 +152,7 @@ public class Matrix
                             }
                             catch (Exception e)
                             {
-                                throw new Exception("Error parsing line: " + line + "\n" + e.toString());
+                                throw new ARFFParseException("Error parsing line: " + line + "\n" + e.toString());
                             }
                         }
                     }
@@ -195,7 +197,7 @@ public class Matrix
                                     doubleValue = m_str_to_enum.get(curPos).get(textValue);
                                     if (doubleValue == -1)
                                     {
-                                        throw new Exception("Error parsing the value '" + textValue + "' on line: " + line);
+                                        throw new ARFFParseException("Error parsing the value '" + textValue + "' on line: " + line);
                                     }
                                 }
 
@@ -206,7 +208,7 @@ public class Matrix
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Error parsing line: " + line + "\n" + e.toString());
+                        throw new ARFFParseException("Error parsing line: " + line + "\n" + e.toString());
                     }
                     m_data.add(newrow);
                 }
