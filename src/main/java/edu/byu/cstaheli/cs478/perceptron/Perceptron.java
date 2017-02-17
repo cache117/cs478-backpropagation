@@ -2,6 +2,7 @@ package edu.byu.cstaheli.cs478.perceptron;
 
 import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import edu.byu.cstaheli.cs478.toolkit.Matrix;
+import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
 import edu.byu.cstaheli.cs478.toolkit.SupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
@@ -10,17 +11,13 @@ import java.util.Random;
 /**
  * Created by cstaheli on 1/17/2017.
  */
-public class Perceptron extends SupervisedLearner
+public class Perceptron extends RandomLearner
 {
-    private Random random;
-    private double learningRate;
     private double[] weights;
-    private MLSystemManager manager;
 
     public Perceptron(Random rand, MLSystemManager manager)
     {
-        super();
-        setRandom(rand);
+        super(rand, manager);
         setLearningRate(.1);
         this.setManager(manager);
     }
@@ -34,7 +31,7 @@ public class Perceptron extends SupervisedLearner
         double previousAccuracy = 0;
         double currentAccuracy = measureAccuracy(strategy.getTrainingFeatures(), strategy.getTrainingLabels(), null);
         double maxAccuracy = 0;
-        getManager().completeEpoch(0, currentAccuracy);
+        completeEpoch(0, currentAccuracy);
         while (keepTraining)
         {
             previousAccuracy = currentAccuracy;
@@ -78,7 +75,7 @@ public class Perceptron extends SupervisedLearner
                 maxAccuracy = currentAccuracy;
             }
             incrementTotalEpochs();
-            getManager().completeEpoch(getTotalEpochs(), currentAccuracy);
+            completeEpoch(getTotalEpochs(), currentAccuracy);
         }
     }
 
@@ -122,49 +119,13 @@ public class Perceptron extends SupervisedLearner
         }
     }
 
-    private double getRandomWeight()
-    {
-        // Gives numbers between -.5 and .5
-        return getRandom().nextDouble() - 0.5;
-    }
-
     public double[] getWeights()
     {
         return weights;
     }
 
-    public Random getRandom()
-    {
-        return random;
-    }
-
-    public void setRandom(Random random)
-    {
-        this.random = random;
-    }
-
-    public double getLearningRate()
-    {
-        return learningRate;
-    }
-
-    public void setLearningRate(double learningRate)
-    {
-        this.learningRate = learningRate;
-    }
-
     public void setWeights(double[] weights)
     {
         this.weights = weights;
-    }
-
-    public MLSystemManager getManager()
-    {
-        return manager;
-    }
-
-    public void setManager(MLSystemManager manager)
-    {
-        this.manager = manager;
     }
 }

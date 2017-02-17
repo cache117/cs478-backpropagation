@@ -9,10 +9,14 @@ import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 public abstract class SupervisedLearner
 {
     private int totalEpochs;
+    private MLSystemManager manager;
+    private double learningRate;
 
-    protected SupervisedLearner()
+    protected SupervisedLearner(MLSystemManager manager)
     {
         totalEpochs = 0;
+        this.setManager(manager);
+        setLearningRate(.1);
     }
 
     public abstract void train(LearningStrategy strategy) throws Exception;
@@ -88,5 +92,30 @@ public abstract class SupervisedLearner
     public void incrementTotalEpochs()
     {
         ++this.totalEpochs;
+    }
+
+    public MLSystemManager getManager()
+    {
+        return manager;
+    }
+
+    public void setManager(MLSystemManager manager)
+    {
+        this.manager = manager;
+    }
+
+    public double getLearningRate()
+    {
+        return learningRate;
+    }
+
+    public void setLearningRate(double learningRate)
+    {
+        this.learningRate = learningRate;
+    }
+
+    protected void completeEpoch(int i, double currentAccuracy)
+    {
+        manager.completeEpoch(i, currentAccuracy);
     }
 }

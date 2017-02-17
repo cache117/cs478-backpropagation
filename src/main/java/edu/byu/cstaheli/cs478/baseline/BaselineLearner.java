@@ -18,6 +18,11 @@ public class BaselineLearner extends SupervisedLearner
 {
     private double[] m_labels;
 
+    public BaselineLearner()
+    {
+        super(null);
+    }
+
     @Override
     public void train(LearningStrategy strategy) throws Exception
     {

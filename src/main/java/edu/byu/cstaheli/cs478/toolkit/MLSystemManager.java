@@ -5,6 +5,7 @@ package edu.byu.cstaheli.cs478.toolkit;
 // ----------------------------------------------------------------
 
 
+import edu.byu.cstaheli.cs478.backpropogation.BackPropagation;
 import edu.byu.cstaheli.cs478.baseline.BaselineLearner;
 import edu.byu.cstaheli.cs478.perceptron.MultipleOutputPerceptron;
 import edu.byu.cstaheli.cs478.perceptron.Perceptron;
@@ -38,6 +39,7 @@ public class MLSystemManager
     {
         if (model.equals("baseline")) return new BaselineLearner();
         else if (model.equals("perceptron")) return new Perceptron(rand, this);
+        else if (model.equals("backpropagation")) return new BackPropagation(rand, this);
             // else if (model.equals("neuralnet")) return new NeuralNet(rand);
             // else if (model.equals("decisiontree")) return new DecisionTree();
             // else if (model.equals("knn")) return new InstanceBasedLearner();
