@@ -16,19 +16,13 @@ public class Node
      * <p>
      * This node is initialized with zeros for weights;
      */
-    protected static final Node ZERO_NODE = new Node(0, 0, new RandomWeightGenerator(new Random(1234)));
-    private int id;
-    private double weight;
+    protected static final Node ZERO_NODE = new Node(0, new RandomWeightGenerator(new Random(1234)));
     private double biasWeight;
-    private double net;
-    private double output;
-    private double gradient;
     private List<InputWeight> inputWeights;
     private RandomWeightGenerator random;
 
-    public Node(int id, int numberOfInputs, RandomWeightGenerator random)
+    public Node(int numberOfInputs, RandomWeightGenerator random)
     {
-        this.id = id;
         this.random = random;
         generateWeights(numberOfInputs);
         this.biasWeight = getRandomWeight();
@@ -92,9 +86,9 @@ public class Node
         }
     }
 
-    public double calcOutputNodeError(double expectedOutput, double actualOutput, double gradient)
+    public double calcOutputNodeError(double gradient, double expectedOutput, double actualOutput)
     {
-        return (expectedOutput - actualOutput) * gradient;
+        return gradient * (expectedOutput - actualOutput);
     }
 
     public double calcHiddenNodeError(double gradient, List<Double> outputErrors, List<Double> weightsToOutputs)

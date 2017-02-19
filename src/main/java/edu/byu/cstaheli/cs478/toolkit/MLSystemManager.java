@@ -17,7 +17,6 @@ import java.util.Random;
 public class MLSystemManager
 {
     private Random random;
-    private Matrix arffData;
     private SupervisedLearner learner;
 
     public MLSystemManager()
@@ -36,13 +35,23 @@ public class MLSystemManager
      */
     public SupervisedLearner getLearner(String model, Random rand) throws Exception
     {
-        if (model.equals("baseline")) return new BaselineLearner();
-        else if (model.equals("perceptron")) return new Perceptron(rand, this);
-        else if (model.equals("backpropagation")) return new BackPropagation(rand, this);
-            // else if (model.equals("neuralnet")) return new NeuralNet(rand);
-            // else if (model.equals("decisiontree")) return new DecisionTree();
-            // else if (model.equals("knn")) return new InstanceBasedLearner();
-        else throw new Exception("Unrecognized model: " + model);
+        switch (model)
+        {
+            case "baseline":
+                return new BaselineLearner();
+            case "perceptron":
+                return new Perceptron(rand, this);
+            case "backpropagation":
+                return new BackPropagation(rand, this);
+//            case "neuralnet":
+//                return new NeuralNet(rand);
+//            case "decisiontree":
+//                return new DecisionTree();
+//            case "knn":
+//                return new InstanceBasedLearner();
+            default:
+                throw new Exception("Unrecognized model: " + model);
+        }
     }
 
     public SupervisedLearner getLearner()
@@ -79,7 +88,7 @@ public class MLSystemManager
         }
 
         // Load the ARFF file
-        arffData = new Matrix();
+        Matrix arffData = new Matrix();
         arffData.loadArff(parser.getARFF());
         if (parser.isNormalized())
         {
@@ -126,6 +135,7 @@ public class MLSystemManager
             confusion.print();
             System.out.println("\n");
         }
+        System.out.println("Total number of epochs: " + learner.getTotalEpochs());
     }
 
     private void calcStatic(SupervisedLearner learner, LearnerData learnerData) throws Exception
@@ -160,6 +170,7 @@ public class MLSystemManager
             confusion.print();
             System.out.println("\n");
         }
+        System.out.println("Total number of epochs: " + learner.getTotalEpochs());
     }
 
     private void calcRandom(SupervisedLearner learner, LearnerData learnerData) throws Exception
@@ -195,6 +206,7 @@ public class MLSystemManager
             System.out.println("\n");
         }
         writeAccuraciesAndFinalWeights(trainAccuracy, testAccuracy, ((Perceptron) learner).getWeights());
+        System.out.println("Total number of epochs: " + learner.getTotalEpochs());
     }
 
     private void calcCrossValidation(SupervisedLearner learner, LearnerData learnerData) throws Exception

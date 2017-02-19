@@ -19,7 +19,39 @@ public abstract class SupervisedLearner
         setLearningRate(.1);
     }
 
-    public abstract void train(LearningStrategy strategy) throws Exception;
+    public void train(LearningStrategy strategy) throws Exception
+    {
+        Matrix trainingFeatures = strategy.getTrainingFeatures();
+        Matrix trainingLabels = strategy.getTrainingLabels();
+        initializeWeights(trainingFeatures.cols(), trainingLabels.valueCount(0));
+        //Get a baseline accuracy
+        double validationAccuracy = calculateValidationSetAccuracy(strategy);
+        double previousAccuracy = validationAccuracy;
+        completeEpoch(0, validationAccuracy);
+        boolean keepTraining = true;
+        //for each epoch
+        while (keepTraining)
+        {
+            //for each training data instance
+            trainingFeatures = strategy.getTrainingFeatures();
+            trainingLabels = strategy.getTrainingLabels();
+            for (int i = 0; i < trainingFeatures.rows(); ++i)
+            {
+                analyzeInputRow(trainingFeatures.row(i), trainingLabels.get(i, 0));
+                //propagate error through the network
+                //adjust the weights
+                //calculate the accuracy over training data
+            }
+            //for each validation data instance
+            //calculate the accuracy over the validation data
+            validationAccuracy = calculateValidationSetAccuracy(strategy);
+            //if the threshold validation accuracy is met, stop training, else continue
+            keepTraining = !isThresholdValidationAccuracyMet(previousAccuracy, validationAccuracy);
+            previousAccuracy = validationAccuracy;
+            incrementTotalEpochs();
+            completeEpoch(getTotalEpochs(), validationAccuracy);
+        }
+    }
 
     // A feature vector goes in. A label vector comes out. (Some supervised
     // learning algorithms only support one-dimensional label vectors. Some
@@ -114,8 +146,21 @@ public abstract class SupervisedLearner
         this.learningRate = learningRate;
     }
 
-    protected void completeEpoch(int i, double currentAccuracy)
+    protected void completeEpoch(int epoch, double currentAccuracy)
     {
-        manager.completeEpoch(i, currentAccuracy);
+        manager.completeEpoch(epoch, currentAccuracy);
     }
+
+    protected double calculateValidationSetAccuracy(LearningStrategy strategy) throws Exception
+    {
+        Matrix validationFeatures = strategy.getValidationFeatures();
+        Matrix validationLabels = strategy.getValidationLabels();
+        return measureAccuracy(validationFeatures, validationLabels, new Matrix());
+    }
+
+    protected abstract void initializeWeights(int features, int outputs);
+
+    protected abstract void analyzeInputRow(double[] row, double expectedOutput);
+
+    protected abstract boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy);
 }

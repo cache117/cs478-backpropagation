@@ -1,7 +1,6 @@
 package edu.byu.cstaheli.cs478.backpropogation;
 
 import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
-import edu.byu.cstaheli.cs478.toolkit.Matrix;
 import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
@@ -27,32 +26,10 @@ public class BackPropagation extends RandomLearner
     @Override
     public void train(LearningStrategy strategy) throws Exception
     {
-        Matrix trainingFeatures = strategy.getTrainingFeatures();
-        Matrix trainingLabels = strategy.getTrainingLabels();
-        initializeWeights(trainingFeatures.cols(), trainingFeatures.valueCount(0));
-        boolean keepTraining = true;
-        //for each epoch
-        while (keepTraining)
-        {
-            //for each training data instance
-            for (int i = 0; i < trainingFeatures.rows(); ++i)
-            {
-                analyzeInputRow(trainingFeatures.row(i), trainingLabels.get(0, 0));
-                //propagate error through the network
-                //adjust the weights
-                //calculate the accuracy over training data
-            }
-            //for each validation data instance
-            Matrix validationFeatures = strategy.getValidationFeatures();
-            Matrix validationLabels = strategy.getValidationLabels();
-            //calculate the accuracy over the validation data
-            double validationAccuracy = measureAccuracy(validationFeatures, validationLabels, null);
-            //if the threshold validation accuracy is met, stop training, else continue
-            keepTraining = !isThresholdValidationAccuracyMet(validationAccuracy);
-        }
+        super.train(strategy);
     }
 
-    private void initializeWeights(int features, int outputs)
+    protected void initializeWeights(int features, int outputs)
     {
         int numberOfNodesInHiddenLayer = getNumberOfNodesInHiddenLayer(features, outputs);
         hiddenLayer = new ArrayList<>(numberOfNodesInHiddenLayer);
@@ -60,15 +37,15 @@ public class BackPropagation extends RandomLearner
         int id = 0;
         for (int i = 0; i < numberOfNodesInHiddenLayer; ++i, ++id)
         {
-            hiddenLayer.add(new Node(id, features, getRandom()));
+            hiddenLayer.add(new Node(features, getRandom()));
         }
         for (int i = 0; i < outputs; ++i, ++id)
         {
-            outputLayer.add(new Node(id, numberOfNodesInHiddenLayer, getRandom()));
+            outputLayer.add(new Node(numberOfNodesInHiddenLayer, getRandom()));
         }
     }
 
-    private void analyzeInputRow(double[] row, double expectedOutput)
+    protected void analyzeInputRow(double[] row, double expectedOutput)
     {
         List<Double> hiddenLayerOutputs = getLayerOutputs(convertInputRow(row), hiddenLayer);
         List<Double> outputLayerErrors = new ArrayList<>(outputLayer.size());
@@ -76,7 +53,7 @@ public class BackPropagation extends RandomLearner
         {
             double nodeOutput = calcNodeOutput(outputNode, hiddenLayerOutputs);
             double gradient = outputNode.calcGradient(nodeOutput);
-            double error = outputNode.calcOutputNodeError(expectedOutput, nodeOutput, gradient);
+            double error = outputNode.calcOutputNodeError(gradient, expectedOutput, nodeOutput);
             outputLayerErrors.add(error);
             outputNode.calcWeightChanges(getLearningRate(), error);
         }
@@ -128,9 +105,9 @@ public class BackPropagation extends RandomLearner
         return (features * 2) + outputs;
     }
 
-    private boolean isThresholdValidationAccuracyMet(double validationAccuracy)
+    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
     {
-        return validationAccuracy > 0;
+        return validationAccuracy <= previousAccuracy;
     }
 
     @Override
@@ -143,8 +120,7 @@ public class BackPropagation extends RandomLearner
 
     private double determineFinalOutput(List<Double> outputs)
     {
+
         return outputs.get(0);
     }
-
-
 }

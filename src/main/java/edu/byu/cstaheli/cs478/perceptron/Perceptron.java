@@ -3,7 +3,6 @@ package edu.byu.cstaheli.cs478.perceptron;
 import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import edu.byu.cstaheli.cs478.toolkit.Matrix;
 import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
-import edu.byu.cstaheli.cs478.toolkit.SupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
 import java.util.Random;
@@ -13,7 +12,9 @@ import java.util.Random;
  */
 public class Perceptron extends RandomLearner
 {
+    private static final int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 5;
     private double[] weights;
+    private int epochsWithoutSignificantImprovement;
 
     public Perceptron(Random rand, MLSystemManager manager)
     {
@@ -25,58 +26,7 @@ public class Perceptron extends RandomLearner
     @Override
     public void train(LearningStrategy strategy) throws Exception
     {
-        initWeights(strategy.getTrainingFeatures());
-        boolean keepTraining = true;
-        int epochsWithoutSignificantImprovement = 0;
-        double previousAccuracy = 0;
-        double currentAccuracy = measureAccuracy(strategy.getTrainingFeatures(), strategy.getTrainingLabels(), null);
-        double maxAccuracy = 0;
-        completeEpoch(0, currentAccuracy);
-        while (keepTraining)
-        {
-            previousAccuracy = currentAccuracy;
-            int counter = 0;
-            int correct = 0;
-            Matrix features = strategy.getTrainingFeatures();
-            Matrix labels = strategy.getTrainingLabels();
-            for (int i = 0; i < features.rows(); ++i)
-            {
-                for (int j = 0; j < features.cols(); ++j)
-                {
-                    double input = features.get(i, j);
-                    double expected = getExpected(labels, i);
-                    double[] row = features.row(i);
-                    double actual = getActivation(getWeights(), row);
-                    double newWeight = calcNewWeight(getWeights()[j], getLearningRate(), expected, actual, input);
-                    getWeights()[j] = newWeight;
-                    ++counter;
-                    if (expected == actual)
-                    {
-                        ++correct;
-                    }
-                }
-            }
-            currentAccuracy = (double) correct / counter;
-
-            if (!isAccuracyChangeLargeEnough(maxAccuracy, currentAccuracy))
-            {
-                int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 5;
-                if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
-                {
-                    keepTraining = false;
-                }
-            }
-            else
-            {
-                epochsWithoutSignificantImprovement = 0;
-            }
-            if (currentAccuracy > maxAccuracy)
-            {
-                maxAccuracy = currentAccuracy;
-            }
-            incrementTotalEpochs();
-            completeEpoch(getTotalEpochs(), currentAccuracy);
-        }
+        super.train(strategy);
     }
 
     protected double getExpected(Matrix labels, int row)
@@ -105,18 +55,49 @@ public class Perceptron extends RandomLearner
         labels[0] = getActivation(getWeights(), features);
     }
 
-    private double calcNewWeight(double oldWeight, double learningRate, double expected, double actual, double input)
+    @Override
+    protected void initializeWeights(int features, int outputs)
     {
-        return oldWeight - learningRate * (actual - expected) * input;
-    }
-
-    private void initWeights(Matrix features)
-    {
-        setWeights(new double[features.cols()]);
-        for (int i = 0; i < features.cols(); ++i)
+        setWeights(new double[features]);
+        for (int i = 0; i < features; ++i)
         {
             getWeights()[i] = getRandomWeight();
         }
+    }
+
+    @Override
+    protected void analyzeInputRow(double[] row, double expectedOutput)
+    {
+        for (int i = 0; i < row.length; ++i)
+        {
+            double input = row[i];
+            double actual = getActivation(getWeights(), row);
+            double newWeight = calcNewWeight(getWeights()[i], getLearningRate(), expectedOutput, actual, input);
+            getWeights()[i] = newWeight;
+        }
+    }
+
+    @Override
+    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
+    {
+        if (!isAccuracyChangeLargeEnough(previousAccuracy, validationAccuracy))
+        {
+            if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            epochsWithoutSignificantImprovement = 0;
+            return false;
+        }
+        return false;
+    }
+
+    private double calcNewWeight(double oldWeight, double learningRate, double expected, double actual, double input)
+    {
+        return oldWeight - learningRate * (actual - expected) * input;
     }
 
     public double[] getWeights()

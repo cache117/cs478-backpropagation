@@ -36,7 +36,7 @@ public class CrossValidationStrategy extends LearningStrategy
     @Override
     public Matrix getTrainingData()
     {
-        return new Matrix(trainingData, 0, 0, getTrainingSetSize(), trainingData.cols());
+        return new Matrix(trainingData, 0, 0, getTrainingSetSize() - 1, trainingData.cols());
     }
 
     @Override
@@ -48,6 +48,20 @@ public class CrossValidationStrategy extends LearningStrategy
     @Override
     public Matrix getValidationData()
     {
-        return new Matrix(trainingData, getTrainingSetSize(), 0, getValidationSetSize(), trainingData.cols());
+        return new Matrix(trainingData, getTrainingSetSize(), 0, getValidationSetSize() - 1, trainingData.cols());
+    }
+
+    @Override
+    protected int getTrainSize()
+    {
+        try
+        {
+            return getInitialTrainingData().rows();
+        }
+        catch (MatrixException e)
+        {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

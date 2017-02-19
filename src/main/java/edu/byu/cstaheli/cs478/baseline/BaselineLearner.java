@@ -39,8 +39,25 @@ public class BaselineLearner extends SupervisedLearner
 
     public void predict(double[] features, double[] labels) throws Exception
     {
-        for (int i = 0; i < m_labels.length; i++)
-            labels[i] = m_labels[i];
+        System.arraycopy(m_labels, 0, labels, 0, m_labels.length);
+    }
+
+    @Override
+    protected void initializeWeights(int features, int outputs)
+    {
+
+    }
+
+    @Override
+    protected void analyzeInputRow(double[] row, double expectedOutput)
+    {
+
+    }
+
+    @Override
+    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
+    {
+        return false;
     }
 
 }

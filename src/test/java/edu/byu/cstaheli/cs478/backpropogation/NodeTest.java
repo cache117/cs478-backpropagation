@@ -75,7 +75,7 @@ class NodeTest
         inputs.add(0d);
         inputs.add(0d);
 
-        Node node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
+        Node node = new Node(inputs.size(), new RandomWeightGenerator(1234));
         double net = node.calcNet(inputs);
         assertNumberBetween(net, .356, .358);
 
@@ -94,7 +94,7 @@ class NodeTest
         inputs = new ArrayList<>();
         inputs.add(1d);
         inputs.add(0d);
-        node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
+        node = new Node(inputs.size(), new RandomWeightGenerator(1234));
         net = node.calcNet(inputs);
         assertNumberBetween(net, .504, .505);
 
@@ -104,7 +104,7 @@ class NodeTest
         inputs.add(1d);
         inputs.add(1d);
         inputs.add(0d);
-        node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
+        node = new Node(inputs.size(), new RandomWeightGenerator(1234));
         net = node.calcNet(inputs);
         assertNumberBetween(net, .471, .472);
     }
