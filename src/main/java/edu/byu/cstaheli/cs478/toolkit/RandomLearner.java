@@ -7,7 +7,7 @@ import java.util.Random;
  */
 public abstract class RandomLearner extends SupervisedLearner
 {
-    private Random random;
+    private RandomWeightGenerator random;
 
     public RandomLearner(Random random, MLSystemManager manager)
     {
@@ -15,19 +15,19 @@ public abstract class RandomLearner extends SupervisedLearner
         this.setRandom(random);
     }
 
-    protected Random getRandom()
-    {
-        return random;
-    }
-
     protected void setRandom(Random random)
     {
-        this.random = random;
+        this.random = new RandomWeightGenerator(random);
     }
 
     protected double getRandomWeight()
     {
         // Gives numbers between -.5 and .5
-        return getRandom().nextDouble() - 0.5;
+        return random.getRandomWeight();
+    }
+
+    protected RandomWeightGenerator getRandom()
+    {
+        return random;
     }
 }

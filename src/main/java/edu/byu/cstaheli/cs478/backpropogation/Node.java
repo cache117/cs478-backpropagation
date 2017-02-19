@@ -1,31 +1,77 @@
 package edu.byu.cstaheli.cs478.backpropogation;
 
+import edu.byu.cstaheli.cs478.toolkit.RandomWeightGenerator;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by cstaheli on 2/16/2017.
  */
 public class Node
 {
+    /**
+     * Used for testing.
+     * <p>
+     * This node is initialized with zeros for weights;
+     */
+    protected static final Node ZERO_NODE = new Node(0, 0, new RandomWeightGenerator(new Random(1234)));
+    private int id;
     private double weight;
     private double biasWeight;
-    protected static final Node ZERO_NODE = new Node(0, 0);
+    private double net;
+    private double output;
+    private double gradient;
+    private List<InputWeight> inputWeights;
+    private RandomWeightGenerator random;
 
-    public Node(double weight, double biasWeight)
+    public Node(int id, int numberOfInputs, RandomWeightGenerator random)
     {
-        this.weight = weight;
-        this.biasWeight = biasWeight;
+        this.id = id;
+        this.random = random;
+        generateWeights(numberOfInputs);
+        this.biasWeight = getRandomWeight();
+    }
+
+    private double getRandomWeight()
+    {
+        return random.getRandomWeight();
+    }
+
+    private void generateWeights(int numberOfInputs)
+    {
+        inputWeights = new ArrayList<>(numberOfInputs);
+        for (int i = 0; i < numberOfInputs; ++i)
+        {
+            inputWeights.add(new InputWeight(getRandomWeight()));
+        }
+    }
+
+    public double getBiasWeight()
+    {
+        return biasWeight;
     }
 
     public double calcNet(List<Double> inputs)
     {
+        addInputs(inputs);
         double net = 0;
-        for (double input: inputs)
+        for (InputWeight inputWeight : inputWeights)
         {
-            net += weight * input;
+            net += inputWeight.calcNet();
         }
-        net += weight * biasWeight;
+        net += biasWeight * 1;
         return net;
+    }
+
+    private void addInputs(List<Double> inputs)
+    {
+        assert inputs.size() == inputWeights.size();
+        for (int i = 0; i < inputs.size(); ++i)
+        {
+            inputWeights.get(i).setInput(inputs.get(i));
+        }
     }
 
     public double calcOutput(double net)
@@ -38,9 +84,12 @@ public class Node
         return output * (1 - output);
     }
 
-    public double calcWeightChange(double learningRate, double nodeInput, double nodeError)
+    public void calcWeightChanges(double learningRate, double outputError)
     {
-        return learningRate * nodeInput * nodeError;
+        for (InputWeight inputWeight : inputWeights)
+        {
+            inputWeight.changeWeight(learningRate, outputError);
+        }
     }
 
     public double calcOutputNodeError(double expectedOutput, double actualOutput, double gradient)
@@ -62,5 +111,11 @@ public class Node
             sum += outputErrors.get(i) * weightsToOutputs.get(i);
         }
         return sum;
+    }
+
+
+    public double getInputWeight(int index)
+    {
+        return inputWeights.get(index).getWeight();
     }
 }

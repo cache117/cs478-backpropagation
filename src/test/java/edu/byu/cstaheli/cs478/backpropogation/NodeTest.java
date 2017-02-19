@@ -1,5 +1,6 @@
 package edu.byu.cstaheli.cs478.backpropogation;
 
+import edu.byu.cstaheli.cs478.toolkit.RandomWeightGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class NodeTest
 {
-
     private static void assertNumberBetween(double number, double lowerBound, double upperBound)
     {
         assertTrue(number >= lowerBound && number <= upperBound);
@@ -42,7 +42,11 @@ class NodeTest
     void testCalcGradient()
     {
         Node node = Node.ZERO_NODE;
+        double gradient = node.calcGradient(.921);
+        assertNumberBetween(gradient, .0727589, .072759);
 
+        gradient = node.calcGradient(.941);
+        assertNumberBetween(gradient, .055518, .05552);
     }
 
     @Test
@@ -69,34 +73,38 @@ class NodeTest
         List<Double> inputs = new ArrayList<>();
         inputs.add(0d);
         inputs.add(0d);
-        Node node = new Node(1, 1);
+
+        Node node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
         double net = node.calcNet(inputs);
-        assertEquals(1, net);
+        assertNumberBetween( net, .356, .358);
 
         inputs = new ArrayList<>();
         inputs.add(0d);
         inputs.add(1d);
         net = node.calcNet(inputs);
-        assertEquals(2, net);
+        assertNumberBetween(net, .807, .809);
 
         inputs = new ArrayList<>();
         inputs.add(1d);
         inputs.add(1d);
         net = node.calcNet(inputs);
-        assertEquals(3, net);
+        assertNumberBetween(net, .955, .956);
+
+        inputs = new ArrayList<>();
+        inputs.add(1d);
+        inputs.add(0d);
+        node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
+        net = node.calcNet(inputs);
+        assertNumberBetween(net, .504, .505);
 
         inputs = new ArrayList<>();
         inputs.add(0d);
         inputs.add(1d);
-        node = new Node(.5, 1);
-        net = node.calcNet(inputs);
-        assertEquals(1, net);
-
-        inputs = new ArrayList<>();
+        inputs.add(1d);
+        inputs.add(1d);
         inputs.add(0d);
-        inputs.add(0d);
-        node = new Node(.5, .5);
+        node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
         net = node.calcNet(inputs);
-        assertEquals(.25, net);
+        assertNumberBetween(net, .471, .472);
     }
 }

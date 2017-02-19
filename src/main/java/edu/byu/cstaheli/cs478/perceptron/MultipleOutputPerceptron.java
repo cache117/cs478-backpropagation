@@ -40,6 +40,6 @@ public class MultipleOutputPerceptron extends Perceptron
     public void predict(double[] features, double[] labels) throws Exception
     {
         double label = getActivation(getWeights(), features);
-        labels[0] = label == 1 ? wantedLabelIndex : getRandom().nextInt(2);
+        labels[0] = label == 1 ? wantedLabelIndex : getRandom().getRandomInt(2);
     }
 }
