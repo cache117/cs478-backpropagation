@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by cstaheli on 2/16/2017.
@@ -76,7 +77,7 @@ class NodeTest
 
         Node node = new Node(0, inputs.size(), new RandomWeightGenerator(1234));
         double net = node.calcNet(inputs);
-        assertNumberBetween( net, .356, .358);
+        assertNumberBetween(net, .356, .358);
 
         inputs = new ArrayList<>();
         inputs.add(0d);

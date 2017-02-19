@@ -11,7 +11,6 @@ import edu.byu.cstaheli.cs478.perceptron.MultipleOutputPerceptron;
 import edu.byu.cstaheli.cs478.perceptron.Perceptron;
 import edu.byu.cstaheli.cs478.toolkit.strategy.*;
 
-import java.io.*;
 import java.util.Random;
 
 

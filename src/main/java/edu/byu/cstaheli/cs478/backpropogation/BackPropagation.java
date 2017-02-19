@@ -5,7 +5,10 @@ import edu.byu.cstaheli.cs478.toolkit.Matrix;
 import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -112,7 +115,7 @@ public class BackPropagation extends RandomLearner
 
     private List<Double> getParentWeights(int index)
     {
-        List<Double> outputLayerWeights =  new ArrayList<>(outputLayer.size());
+        List<Double> outputLayerWeights = new ArrayList<>(outputLayer.size());
         for (Node outputNode : outputLayer)
         {
             outputLayerWeights.add(outputNode.getInputWeight(index));

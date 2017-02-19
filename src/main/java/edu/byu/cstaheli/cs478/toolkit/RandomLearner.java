@@ -15,11 +15,6 @@ public abstract class RandomLearner extends SupervisedLearner
         this.setRandom(random);
     }
 
-    protected void setRandom(Random random)
-    {
-        this.random = new RandomWeightGenerator(random);
-    }
-
     protected double getRandomWeight()
     {
         // Gives numbers between -.5 and .5
@@ -29,5 +24,10 @@ public abstract class RandomLearner extends SupervisedLearner
     protected RandomWeightGenerator getRandom()
     {
         return random;
+    }
+
+    protected void setRandom(Random random)
+    {
+        this.random = new RandomWeightGenerator(random);
     }
 }

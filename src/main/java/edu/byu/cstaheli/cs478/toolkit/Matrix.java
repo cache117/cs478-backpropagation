@@ -10,8 +10,11 @@ import edu.byu.cstaheli.cs478.toolkit.exception.MatrixException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.TreeMap;
 
 public class Matrix
 {
