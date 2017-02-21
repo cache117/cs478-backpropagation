@@ -28,6 +28,17 @@ public class Node
         this.biasWeight = getRandomWeight();
     }
 
+    public Node(List<InputWeight> inputs, double biasWeight)
+    {
+        inputWeights = inputs;
+        this.biasWeight = biasWeight;
+    }
+
+    public static double calculateWeightDelta(double learningRate, double outputError, double input)
+    {
+        return learningRate * input * outputError;
+    }
+
     private double getRandomWeight()
     {
         return random.getRandomWeight();
@@ -84,6 +95,8 @@ public class Node
         {
             inputWeight.changeWeight(learningRate, outputError);
         }
+        biasWeight += (learningRate * 1 * outputError);
+        biasWeight += calculateWeightDelta(learningRate, outputError, 1);
     }
 
     public double calcOutputNodeError(double gradient, double expectedOutput, double actualOutput)
@@ -106,7 +119,6 @@ public class Node
         }
         return sum;
     }
-
 
     public double getInputWeight(int index)
     {

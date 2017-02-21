@@ -15,12 +15,34 @@ import java.util.stream.Collectors;
  */
 public class BackPropagation extends RandomLearner
 {
+    private static final int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 5;
     private List<Node> hiddenLayer;
     private List<Node> outputLayer;
+    private int epochsWithoutSignificantImprovement;
 
     public BackPropagation(Random rand, MLSystemManager manager)
     {
         super(rand, manager);
+    }
+
+    public List<Node> getHiddenLayer()
+    {
+        return hiddenLayer;
+    }
+
+    public void setHiddenLayer(List<Node> hiddenLayer)
+    {
+        this.hiddenLayer = hiddenLayer;
+    }
+
+    public List<Node> getOutputLayer()
+    {
+        return outputLayer;
+    }
+
+    public void setOutputLayer(List<Node> outputLayer)
+    {
+        this.outputLayer = outputLayer;
     }
 
     @Override
@@ -55,7 +77,7 @@ public class BackPropagation extends RandomLearner
             double gradient = outputNode.calcGradient(nodeOutput);
             double error = outputNode.calcOutputNodeError(gradient, expectedOutput, nodeOutput);
             outputLayerErrors.add(error);
-            outputNode.calcWeightChanges(getLearningRate(), error);
+//            outputNode.calcWeightChanges(getLearningRate(), error);
         }
         assert hiddenLayer.size() == hiddenLayerOutputs.size() && outputLayerErrors.size() == outputLayer.size();
         for (int i = 0; i < hiddenLayer.size(); ++i)
@@ -65,6 +87,13 @@ public class BackPropagation extends RandomLearner
             double gradient = hiddenNode.calcGradient(hiddenLayerOutputs.get(i));
             double error = hiddenNode.calcHiddenNodeError(gradient, outputLayerErrors, outputLayerWeights);
             hiddenNode.calcWeightChanges(getLearningRate(), error);
+        }
+
+        for (int i = 0; i < outputLayer.size(); ++i)
+        {
+            Node outputNode = outputLayer.get(i);
+            double error = outputLayerErrors.get(i);
+            outputNode.calcWeightChanges(getLearningRate(), error);
         }
     }
 
@@ -107,7 +136,19 @@ public class BackPropagation extends RandomLearner
 
     protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
     {
-        return validationAccuracy <= previousAccuracy;
+        if (validationAccuracy <= previousAccuracy)
+        {
+            if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            epochsWithoutSignificantImprovement = 0;
+            return false;
+        }
+        return false;
     }
 
     @Override
@@ -120,7 +161,18 @@ public class BackPropagation extends RandomLearner
 
     private double determineFinalOutput(List<Double> outputs)
     {
-
-        return outputs.get(0);
+        //return the index of the node that activated
+        int index = 0;
+        double maxOutput = outputs.get(0);
+        for (int i = 1; i < outputs.size(); ++i)
+        {
+            double output = outputs.get(i);
+            if (output > maxOutput)
+            {
+                maxOutput = output;
+                index = i;
+            }
+        }
+        return index;
     }
 }

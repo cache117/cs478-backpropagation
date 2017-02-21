@@ -13,6 +13,12 @@ public class InputWeight
         this.weight = weight;
     }
 
+    public InputWeight(double input, double weight)
+    {
+        this(weight);
+        this.input = input;
+    }
+
     public double getInput()
     {
         return input;
@@ -35,7 +41,7 @@ public class InputWeight
 
     public void changeWeight(double learningRate, double outputError)
     {
-        double weightDelta = learningRate * input * outputError;
+        double weightDelta = Node.calculateWeightDelta(learningRate, outputError, input);
         applyWeightChange(weightDelta);
     }
 
