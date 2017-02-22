@@ -34,12 +34,18 @@ class NodeTest
         double output2 = node2.calcOutput(net2);
         assertNumberBetween(output2, .7305, .7314);
 
+        inputWeights = new ArrayList<>(2);
+        inputWeights.add(new InputWeight(1));
+        inputWeights.add(new InputWeight(1));
         Node node3 = new Node(inputWeights, 1);
         double net3 = node3.calcNet(inputs);
         assertEquals(1, net3);
         double output3 = node3.calcOutput(net3);
         assertNumberBetween(output3, .7305, .7314);
 
+        inputWeights = new ArrayList<>(2);
+        inputWeights.add(new InputWeight(1));
+        inputWeights.add(new InputWeight(1));
         Node node1 = new Node(inputWeights, 1);
         inputs = new ArrayList<>(2);
         inputs.add(output2);
@@ -76,50 +82,51 @@ class NodeTest
         assertNumberBetween(error3, .00111, .00112);
 
         double learningRate = 1;
-        double deltaWeight2To1 = Node.calculateWeightDelta(learningRate, error1, output2);
+        double momentum = 0;
+        double deltaWeight2To1 = Node.calculateWeightDelta(learningRate, error1, output2, 0, momentum);
         assertNumberBetween(deltaWeight2To1, .00415, .00416);
-        double deltaWeight3To1 = Node.calculateWeightDelta(learningRate, error1, output3);
+        double deltaWeight3To1 = Node.calculateWeightDelta(learningRate, error1, output3, 0, momentum);
         assertNumberBetween(deltaWeight3To1, .00415, .00416);
-        double deltaBias1 = Node.calculateWeightDelta(learningRate, error1, 1);
+        double deltaBias1 = Node.calculateWeightDelta(learningRate, error1, 1, 0, momentum);
         assertNumberBetween(deltaBias1, .005686, .005687);
 
-        double deltaWeightI1To2 = Node.calculateWeightDelta(learningRate, error2, 0);
+        double deltaWeightI1To2 = Node.calculateWeightDelta(learningRate, error2, 0, 0, momentum);
         assertEquals(0, deltaWeightI1To2);
-        double deltaWeightI2To2 = Node.calculateWeightDelta(learningRate, error2, 0);
+        double deltaWeightI2To2 = Node.calculateWeightDelta(learningRate, error2, 0, 0, momentum);
         assertEquals(0, deltaWeightI2To2);
-        double deltaBias2 = Node.calculateWeightDelta(learningRate, error2, 1);
+        double deltaBias2 = Node.calculateWeightDelta(learningRate, error2, 1, 0, momentum);
         assertNumberBetween(deltaBias2, .00111, .00112);
 
-        double deltaWeightI1To3 = Node.calculateWeightDelta(learningRate, error3, 0);
+        double deltaWeightI1To3 = Node.calculateWeightDelta(learningRate, error3, 0, 0, momentum);
         assertEquals(0, deltaWeightI1To3);
-        double deltaWeightI2To3 = Node.calculateWeightDelta(learningRate, error3, 0);
+        double deltaWeightI2To3 = Node.calculateWeightDelta(learningRate, error3, 0, 0, momentum);
         assertEquals(0, deltaWeightI2To3);
-        double deltaBias3 = Node.calculateWeightDelta(learningRate, error3, 1);
+        double deltaBias3 = Node.calculateWeightDelta(learningRate, error3, 1, 0, momentum);
         assertNumberBetween(deltaBias3, .00111, .00112);
 
-        node1.calcWeightChanges(learningRate, error1);
+        node1.calcWeightChanges(learningRate, error1, momentum);
         inputWeight2To1 = node1.getInputWeight(0);
         assertNumberBetween(inputWeight2To1, 1.0041, 1.0042);
         inputWeight3To1 = node1.getInputWeight(1);
         assertNumberBetween(inputWeight3To1, 1.0041, 1.0042);
         double bias1 = node1.getBiasWeight();
-        //assertNumberBetween(bias1, 1.005686, 1.005687);
+        assertNumberBetween(bias1, 1.005686, 1.005687);
 
-        node2.calcWeightChanges(learningRate, error2);
+        node2.calcWeightChanges(learningRate, error2, momentum);
         double inputWeightI1To2 = node2.getInputWeight(0);
         assertEquals(1, inputWeightI1To2);
         double inputWeightI2To2 = node2.getInputWeight(1);
         assertEquals(1, inputWeightI2To2);
         double bias2 = node2.getBiasWeight();
-        assertNumberBetween(bias2, 1.00112, 1.00114);
+        assertNumberBetween(bias2, 1.00111, 1.00112);
 
-        node3.calcWeightChanges(learningRate, error3);
+        node3.calcWeightChanges(learningRate, error3, momentum);
         double inputWeightI1To3 = node3.getInputWeight(0);
         assertEquals(1, inputWeightI1To3);
         double inputWeightI2To3 = node3.getInputWeight(1);
         assertEquals(1, inputWeightI2To3);
         double bias3 = node3.getBiasWeight();
-        assertNumberBetween(bias3, 1.00112, 1.00114);
+        assertNumberBetween(bias3, 1.00111, 1.00112);
     }
 
     @Test
@@ -168,11 +175,12 @@ class NodeTest
     @Test
     void testCalcWeightChanges()
     {
+        double momentum = 0;
         List<InputWeight> inputWeights = new ArrayList<>(2);
         inputWeights.add(new InputWeight(0, 1));
         inputWeights.add(new InputWeight(0, 1));
         Node node = new Node(inputWeights, 1);
-        node.calcWeightChanges(1, .00113);
+        node.calcWeightChanges(1, .00113, momentum);
         double weight = node.getInputWeight(0);
         assertEquals(1, weight);
         weight = node.getInputWeight(1);
@@ -184,7 +192,7 @@ class NodeTest
         inputWeights.add(new InputWeight(.731, 1));
         inputWeights.add(new InputWeight(.731, 1));
         node = new Node(inputWeights, 1);
-        node.calcWeightChanges(1, .00575);
+        node.calcWeightChanges(1, .00575, momentum);
         weight = node.getInputWeight(0);
         assertNumberBetween(weight, 1.00419, 1.00421);
         weight = node.getInputWeight(1);

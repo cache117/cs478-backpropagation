@@ -18,6 +18,7 @@ public class Node
      */
     protected static final Node ZERO_NODE = new Node(0, new RandomWeightGenerator(new Random(1234)));
     private double biasWeight;
+    private double previousDeltaBiasWeight;
     private List<InputWeight> inputWeights;
     private RandomWeightGenerator random;
 
@@ -26,17 +27,19 @@ public class Node
         this.random = random;
         generateWeights(numberOfInputs);
         this.biasWeight = getRandomWeight();
+        previousDeltaBiasWeight = 0;
     }
 
     public Node(List<InputWeight> inputs, double biasWeight)
     {
         inputWeights = inputs;
         this.biasWeight = biasWeight;
+        previousDeltaBiasWeight = 0;
     }
 
-    public static double calculateWeightDelta(double learningRate, double outputError, double input)
+    public static double calculateWeightDelta(double learningRate, double outputError, double input, double previousWeightDelta, double momentum)
     {
-        return learningRate * input * outputError;
+        return (previousWeightDelta * momentum) + (learningRate * input * outputError);
     }
 
     private double getRandomWeight()
@@ -89,14 +92,14 @@ public class Node
         return output * (1 - output);
     }
 
-    public void calcWeightChanges(double learningRate, double outputError)
+    public void calcWeightChanges(double learningRate, double outputError, double momentum)
     {
         for (InputWeight inputWeight : inputWeights)
         {
-            inputWeight.changeWeight(learningRate, outputError);
+            inputWeight.changeWeight(learningRate, outputError, momentum);
         }
-        biasWeight += (learningRate * 1 * outputError);
-        biasWeight += calculateWeightDelta(learningRate, outputError, 1);
+        previousDeltaBiasWeight = calculateWeightDelta(learningRate, outputError, 1, previousDeltaBiasWeight, momentum);
+        biasWeight += previousDeltaBiasWeight;
     }
 
     public double calcOutputNodeError(double gradient, double expectedOutput, double actualOutput)

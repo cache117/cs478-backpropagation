@@ -16,13 +16,26 @@ import java.util.stream.Collectors;
 public class BackPropagation extends RandomLearner
 {
     private static final int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 5;
+
     private List<Node> hiddenLayer;
     private List<Node> outputLayer;
     private int epochsWithoutSignificantImprovement;
+    private double momentum;
 
     public BackPropagation(Random rand, MLSystemManager manager)
     {
         super(rand, manager);
+        momentum = 0;
+    }
+
+    public double getMomentum()
+    {
+        return momentum;
+    }
+
+    public void setMomentum(double momentum)
+    {
+        this.momentum = momentum;
     }
 
     public List<Node> getHiddenLayer()
@@ -55,13 +68,13 @@ public class BackPropagation extends RandomLearner
     {
         int numberOfNodesInHiddenLayer = getNumberOfNodesInHiddenLayer(features, outputs);
         hiddenLayer = new ArrayList<>(numberOfNodesInHiddenLayer);
-        outputLayer = new ArrayList<>(outputs);
-        int id = 0;
-        for (int i = 0; i < numberOfNodesInHiddenLayer; ++i, ++id)
+        for (int i = 0; i < numberOfNodesInHiddenLayer; ++i)
         {
             hiddenLayer.add(new Node(features, getRandom()));
         }
-        for (int i = 0; i < outputs; ++i, ++id)
+
+        outputLayer = new ArrayList<>(outputs);
+        for (int i = 0; i < outputs; ++i)
         {
             outputLayer.add(new Node(numberOfNodesInHiddenLayer, getRandom()));
         }
@@ -79,30 +92,31 @@ public class BackPropagation extends RandomLearner
             outputLayerErrors.add(error);
 //            outputNode.calcWeightChanges(getLearningRate(), error);
         }
+
         assert hiddenLayer.size() == hiddenLayerOutputs.size() && outputLayerErrors.size() == outputLayer.size();
         for (int i = 0; i < hiddenLayer.size(); ++i)
         {
-            List<Double> outputLayerWeights = getParentWeights(i);
+            List<Double> outputLayerWeights = getParentWeights(i, outputLayer);
             Node hiddenNode = hiddenLayer.get(i);
             double gradient = hiddenNode.calcGradient(hiddenLayerOutputs.get(i));
             double error = hiddenNode.calcHiddenNodeError(gradient, outputLayerErrors, outputLayerWeights);
-            hiddenNode.calcWeightChanges(getLearningRate(), error);
+            hiddenNode.calcWeightChanges(getLearningRate(), error, momentum);
         }
 
         for (int i = 0; i < outputLayer.size(); ++i)
         {
             Node outputNode = outputLayer.get(i);
             double error = outputLayerErrors.get(i);
-            outputNode.calcWeightChanges(getLearningRate(), error);
+            outputNode.calcWeightChanges(getLearningRate(), error, momentum);
         }
     }
 
     private List<Double> getLayerOutputs(List<Double> inputs, List<Node> layer)
     {
         List<Double> layerOutputs = new ArrayList<>(layer.size());
-        for (Node hiddenNode : layer)
+        for (Node node : layer)
         {
-            double nodeOutput = calcNodeOutput(hiddenNode, inputs);
+            double nodeOutput = calcNodeOutput(node, inputs);
             layerOutputs.add(nodeOutput);
         }
         return layerOutputs;
@@ -119,10 +133,10 @@ public class BackPropagation extends RandomLearner
         return node.calcOutput(net);
     }
 
-    private List<Double> getParentWeights(int index)
+    private List<Double> getParentWeights(int index, List<Node> parentLayer)
     {
-        List<Double> outputLayerWeights = new ArrayList<>(outputLayer.size());
-        for (Node outputNode : outputLayer)
+        List<Double> outputLayerWeights = new ArrayList<>(parentLayer.size());
+        for (Node outputNode : parentLayer)
         {
             outputLayerWeights.add(outputNode.getInputWeight(index));
         }

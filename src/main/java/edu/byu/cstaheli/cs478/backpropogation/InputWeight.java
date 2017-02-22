@@ -7,6 +7,7 @@ public class InputWeight
 {
     private double input;
     private double weight;
+    private double previousWeightDelta;
 
     public InputWeight(double weight)
     {
@@ -17,6 +18,7 @@ public class InputWeight
     {
         this(weight);
         this.input = input;
+        previousWeightDelta = 0;
     }
 
     public double getInput()
@@ -39,10 +41,10 @@ public class InputWeight
         return input * weight;
     }
 
-    public void changeWeight(double learningRate, double outputError)
+    public void changeWeight(double learningRate, double outputError, double momentum)
     {
-        double weightDelta = Node.calculateWeightDelta(learningRate, outputError, input);
-        applyWeightChange(weightDelta);
+        previousWeightDelta = Node.calculateWeightDelta(learningRate, outputError, input, previousWeightDelta, momentum);
+        applyWeightChange(previousWeightDelta);
     }
 
     private void applyWeightChange(double deltaWeight)

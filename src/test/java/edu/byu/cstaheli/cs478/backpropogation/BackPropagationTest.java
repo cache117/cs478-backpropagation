@@ -17,7 +17,7 @@ class BackPropagationTest
 {
     private static void assertNumberBetween(double number, double lowerBound, double upperBound)
     {
-        assertTrue(number >= lowerBound && number <= upperBound);
+        assertTrue(number >= lowerBound && number <= upperBound, String.format("Actual: %s. Expected Bounds[%s, %s].", number, lowerBound, upperBound));
     }
 
     @Test
@@ -54,8 +54,7 @@ class BackPropagationTest
         hiddenNodes = backPropagation.getHiddenLayer();
         Node node = hiddenNodes.get(0);
         double weight = node.getInputWeight(0);
-//        assertEquals(0, weight);
-//        assertNumberBetween(weight, -.001, .001);
+        assertNumberBetween(weight, -.001, .001);
         outputNodes = backPropagation.getOutputLayer();
         node = outputNodes.get(0);
         weight = node.getInputWeight(0);
