@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -54,11 +53,13 @@ class BackPropagationTest
         hiddenNodes = backPropagation.getHiddenLayer();
         Node node = hiddenNodes.get(0);
         double weight = node.getInputWeight(0);
-        assertNumberBetween(weight, -.001, .001);
+        assertNumberBetween(weight, -.9, 1.1);
         outputNodes = backPropagation.getOutputLayer();
         node = outputNodes.get(0);
-        weight = node.getInputWeight(0);
-        assertEquals(0, weight);
+        weight = node.getInputWeight(1);
+        assertNumberBetween(weight, -.9, 1.1);
+        weight = node.getBiasWeight();
+        assertNumberBetween(weight, 1.00111, 1.00112);
 
         inputWeights = getInputWeights();
         hiddenNodes = getHiddenNodes(inputWeights);

@@ -83,16 +83,24 @@ public class BackPropagation extends RandomLearner
     protected void analyzeInputRow(double[] row, double expectedOutput)
     {
         List<Double> hiddenLayerOutputs = getLayerOutputs(convertInputRow(row), hiddenLayer);
-        List<Double> outputLayerErrors = new ArrayList<>(outputLayer.size());
-        for (Node outputNode : outputLayer)
-        {
-            double nodeOutput = calcNodeOutput(outputNode, hiddenLayerOutputs);
-            double gradient = outputNode.calcGradient(nodeOutput);
-            double error = outputNode.calcOutputNodeError(gradient, expectedOutput, nodeOutput);
-            outputLayerErrors.add(error);
-//            outputNode.calcWeightChanges(getLearningRate(), error);
-        }
+        List<Double> outputLayerErrors = getOutputLayerErrors(expectedOutput, hiddenLayerOutputs);
+        updateHiddenLayerWeights(hiddenLayerOutputs, outputLayerErrors);
+        updateOutputLayerWeights(outputLayerErrors);
+    }
 
+    private void updateOutputLayerWeights(List<Double> outputLayerErrors)
+    {
+        assert outputLayerErrors.size() == outputLayer.size();
+        for (int i = 0; i < outputLayer.size(); ++i)
+        {
+            Node outputNode = outputLayer.get(i);
+            double error = outputLayerErrors.get(i);
+            outputNode.calcWeightChanges(getLearningRate(), error, momentum);
+        }
+    }
+
+    private void updateHiddenLayerWeights(List<Double> hiddenLayerOutputs, List<Double> outputLayerErrors)
+    {
         assert hiddenLayer.size() == hiddenLayerOutputs.size() && outputLayerErrors.size() == outputLayer.size();
         for (int i = 0; i < hiddenLayer.size(); ++i)
         {
@@ -102,13 +110,20 @@ public class BackPropagation extends RandomLearner
             double error = hiddenNode.calcHiddenNodeError(gradient, outputLayerErrors, outputLayerWeights);
             hiddenNode.calcWeightChanges(getLearningRate(), error, momentum);
         }
+    }
 
-        for (int i = 0; i < outputLayer.size(); ++i)
+    private List<Double> getOutputLayerErrors(double expectedOutput, List<Double> hiddenLayerOutputs)
+    {
+        List<Double> outputLayerErrors = new ArrayList<>(outputLayer.size());
+        for (Node outputNode : outputLayer)
         {
-            Node outputNode = outputLayer.get(i);
-            double error = outputLayerErrors.get(i);
-            outputNode.calcWeightChanges(getLearningRate(), error, momentum);
+            double nodeOutput = calcNodeOutput(outputNode, hiddenLayerOutputs);
+            double gradient = outputNode.calcGradient(nodeOutput);
+            double error = outputNode.calcOutputNodeError(gradient, expectedOutput, nodeOutput);
+            outputLayerErrors.add(error);
+//            outputNode.calcWeightChanges(getLearningRate(), error);
         }
+        return outputLayerErrors;
     }
 
     private List<Double> getLayerOutputs(List<Double> inputs, List<Node> layer)
