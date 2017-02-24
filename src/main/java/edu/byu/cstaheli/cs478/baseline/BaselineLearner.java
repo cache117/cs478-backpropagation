@@ -60,4 +60,10 @@ public class BaselineLearner extends SupervisedLearner
         return false;
     }
 
+    @Override
+    public void writeAccuraciesAndFinalWeights(double trainAccuracy, double testAccuracy)
+    {
+
+    }
+
 }

@@ -26,14 +26,19 @@ class BackPropagationTest
         String[] args;
         MLSystemManager manager = new MLSystemManager();
         String datasetsLocation = "src/test/resources/datasets/";
-        System.out.println("Training");
-        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E training -V").split(" ");
+//        System.out.println("Training");
+//        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E training -V").split(" ");
+//        manager.run(args);
+//        System.out.println("Training");
+//        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E training -V").split(" ");
+//        manager.run(args);
+//        System.out.println("Cross Fold Validation");
+//        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E cross 25").split(" ");
+//        manager.run(args);
+        System.out.println("");
+        args = ("-L backpropagation -A " + datasetsLocation + "iris.arff -E random .75").split(" ");
         manager.run(args);
-        System.out.println("Training");
-        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E training -V").split(" ");
-        manager.run(args);
-        System.out.println("Cross Fold Validation");
-        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E cross 25 -V").split(" ");
+        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E random .75").split(" ");
         manager.run(args);
     }
 

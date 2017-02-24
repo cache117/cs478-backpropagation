@@ -192,7 +192,7 @@ public class MLSystemManager
             confusion.print();
             System.out.println("\n");
         }
-        writeAccuraciesAndFinalWeights(trainAccuracy, testAccuracy, ((Perceptron) learner).getWeights());
+        learner.writeAccuraciesAndFinalWeights(trainAccuracy, testAccuracy);
         System.out.println("Total number of epochs: " + learner.getTotalEpochs());
     }
 
@@ -258,31 +258,6 @@ public class MLSystemManager
     private void setRandom(Random random)
     {
         this.random = random;
-    }
-
-    public void completeEpoch(int epoch, double trainingAccuracy)
-    {
-        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
-        {
-            writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }*/
-    }
-
-    public void writeAccuraciesAndFinalWeights(double trainingAccuracy, double testingAccuracy, double[] weights)
-    {
-        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
-        {
-            writer.append(String.format("Accuracy\n%s, %s\n", trainingAccuracy, testingAccuracy));
-            writer.append(String.format("Final Weights\n%s", getArrayString(weights)));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }*/
     }
 
     private String getArrayString(double[] array)

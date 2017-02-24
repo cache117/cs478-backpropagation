@@ -95,6 +95,20 @@ public class Perceptron extends RandomLearner
         return false;
     }
 
+    @Override
+    public void writeAccuraciesAndFinalWeights(double trainAccuracy, double testAccuracy)
+    {
+        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        {
+            writer.append(String.format("Accuracy\n%s, %s\n", trainingAccuracy, testingAccuracy));
+            writer.append(String.format("Final Weights\n%s", getArrayString(weights)));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }*/
+    }
+
     private double calcNewWeight(double oldWeight, double learningRate, double expected, double actual, double input)
     {
         return oldWeight - learningRate * (actual - expected) * input;

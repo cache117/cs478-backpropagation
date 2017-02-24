@@ -151,7 +151,14 @@ public abstract class SupervisedLearner
 
     protected void completeEpoch(int epoch, double currentAccuracy)
     {
-        manager.completeEpoch(epoch, currentAccuracy);
+        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        {
+            writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }*/
     }
 
     protected double calculateValidationSetAccuracy(LearningStrategy strategy) throws Exception
@@ -166,4 +173,18 @@ public abstract class SupervisedLearner
     protected abstract void analyzeInputRow(double[] row, double expectedOutput);
 
     protected abstract boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy);
+
+    public abstract void writeAccuraciesAndFinalWeights(double trainAccuracy, double testAccuracy);
+
+    public void completeEpoch()
+    {
+        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        {
+            writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }*/
+    }
 }
