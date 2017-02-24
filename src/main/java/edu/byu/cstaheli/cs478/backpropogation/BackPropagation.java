@@ -117,11 +117,13 @@ public class BackPropagation extends RandomLearner
     private List<Double> getOutputLayerErrors(double expectedOutput, List<Double> hiddenLayerOutputs)
     {
         List<Double> outputLayerErrors = new ArrayList<>(outputLayer.size());
-        for (Node outputNode : outputLayer)
+        for (int i = 0; i < outputLayer.size(); ++i)
         {
+            Node outputNode = outputLayer.get(i);
             double nodeOutput = calcNodeOutput(outputNode, hiddenLayerOutputs);
             double gradient = outputNode.calcGradient(nodeOutput);
-            double error = outputNode.calcOutputNodeError(gradient, expectedOutput, nodeOutput);
+            double nodeActivationExpected = expectedOutput == i ? 1 : 0;
+            double error = outputNode.calcOutputNodeError(gradient, nodeActivationExpected, nodeOutput);
             outputLayerErrors.add(error);
 //            outputNode.calcWeightChanges(getLearningRate(), error);
         }

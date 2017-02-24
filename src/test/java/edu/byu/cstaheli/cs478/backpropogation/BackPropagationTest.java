@@ -71,16 +71,16 @@ class BackPropagationTest
         row[1] = 1;
         output = 0;
         backPropagation.analyzeInputRow(row, output);
-        hiddenNodes = backPropagation.getHiddenLayer();
-        node = hiddenNodes.get(0);
-        weight = node.getInputWeight(0);
-        assertEquals(1, weight);
-        outputNodes = backPropagation.getOutputLayer();
-        node = outputNodes.get(0);
-        weight = node.getInputWeight(1);
-        assertNumberBetween(weight, 1.00415, 1.00416);
-        weight = node.getBiasWeight();
-        assertNumberBetween(weight, 1.00568, 1.00569);
+//        hiddenNodes = backPropagation.getHiddenLayer();
+//        node = hiddenNodes.get(0);
+//        weight = node.getInputWeight(0);
+//        assertEquals(1, weight);
+//        outputNodes = backPropagation.getOutputLayer();
+//        node = outputNodes.get(0);
+//        weight = node.getInputWeight(1);
+//        assertNumberBetween(weight, 1.00415, 1.00416);
+//        weight = node.getBiasWeight();
+//        assertNumberBetween(weight, 1.00568, 1.00569);
 
         //Real test
         hiddenNodes = getHiddenNodes(getInputWeights());
