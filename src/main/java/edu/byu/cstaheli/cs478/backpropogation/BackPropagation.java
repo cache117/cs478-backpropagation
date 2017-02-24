@@ -67,17 +67,18 @@ public class BackPropagation extends RandomLearner
     protected void initializeWeights(int features, int outputs)
     {
         int numberOfNodesInHiddenLayer = getNumberOfNodesInHiddenLayer(features, outputs);
-        hiddenLayer = new ArrayList<>(numberOfNodesInHiddenLayer);
-        for (int i = 0; i < numberOfNodesInHiddenLayer; ++i)
-        {
-            hiddenLayer.add(new Node(features, getRandom()));
-        }
+        hiddenLayer = initializeLayer(features, numberOfNodesInHiddenLayer);
+        outputLayer = initializeLayer(numberOfNodesInHiddenLayer, outputs);
+    }
 
-        outputLayer = new ArrayList<>(outputs);
-        for (int i = 0; i < outputs; ++i)
+    private List<Node> initializeLayer(int nodes, int inputs)
+    {
+        List<Node> layerNodes = new ArrayList<>(nodes);
+        for (int i = 0; i < nodes; ++i)
         {
-            outputLayer.add(new Node(numberOfNodesInHiddenLayer, getRandom()));
+            layerNodes.add(new Node(inputs, getRandom()));
         }
+        return layerNodes;
     }
 
     protected void analyzeInputRow(double[] row, double expectedOutput)
@@ -163,9 +164,9 @@ public class BackPropagation extends RandomLearner
         return (features * 2) + outputs;
     }
 
-    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
+    protected boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy)
     {
-        if (validationAccuracy <= previousAccuracy)
+        if (validationAccuracy <= bestAccuracy)
         {
             if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
             {

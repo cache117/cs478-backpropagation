@@ -78,9 +78,9 @@ public class Perceptron extends RandomLearner
     }
 
     @Override
-    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
+    protected boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy)
     {
-        if (!isAccuracyChangeLargeEnough(previousAccuracy, validationAccuracy))
+        if (!isAccuracyChangeLargeEnough(bestAccuracy, validationAccuracy))
         {
             if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
             {

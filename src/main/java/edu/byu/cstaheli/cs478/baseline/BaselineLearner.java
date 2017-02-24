@@ -55,7 +55,7 @@ public class BaselineLearner extends SupervisedLearner
     }
 
     @Override
-    protected boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy)
+    protected boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy)
     {
         return false;
     }

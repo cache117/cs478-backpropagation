@@ -26,7 +26,7 @@ public abstract class SupervisedLearner
         initializeWeights(trainingFeatures.cols(), trainingLabels.valueCount(0));
         //Get a baseline accuracy
         double validationAccuracy = calculateValidationSetAccuracy(strategy);
-        double previousAccuracy = validationAccuracy;
+        double bestAccuracy = validationAccuracy;
         completeEpoch(0, validationAccuracy);
         boolean keepTraining = true;
         //for each epoch
@@ -46,8 +46,11 @@ public abstract class SupervisedLearner
             //calculate the accuracy over the validation data
             validationAccuracy = calculateValidationSetAccuracy(strategy);
             //if the threshold validation accuracy is met, stop training, else continue
-            keepTraining = !isThresholdValidationAccuracyMet(previousAccuracy, validationAccuracy);
-            previousAccuracy = validationAccuracy;
+            keepTraining = !isThresholdValidationAccuracyMet(validationAccuracy, bestAccuracy);
+            if (bestAccuracy > validationAccuracy)
+            {
+                bestAccuracy = validationAccuracy;
+            }
             incrementTotalEpochs();
             completeEpoch(getTotalEpochs(), validationAccuracy);
         }
@@ -162,5 +165,5 @@ public abstract class SupervisedLearner
 
     protected abstract void analyzeInputRow(double[] row, double expectedOutput);
 
-    protected abstract boolean isThresholdValidationAccuracyMet(double previousAccuracy, double validationAccuracy);
+    protected abstract boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy);
 }
