@@ -120,8 +120,6 @@ public class MLSystemManager
     {
         System.out.println("Calculating accuracy on training set...");
         LearningStrategy strategy = new TrainingStrategy(learnerData);
-//        Matrix features = new Matrix(learnerData.getArffData(), 0, 0, learnerData.getArffData().rows(), learnerData.getArffData().cols() - 1);
-//        Matrix labels = new Matrix(learnerData.getArffData(), 0, learnerData.getArffData().cols() - 1, learnerData.getArffData().rows(), 1);
         Matrix confusion = new Matrix();
         double startTime = System.currentTimeMillis();
         learner.train(strategy);
@@ -141,10 +139,6 @@ public class MLSystemManager
     private void calcStatic(SupervisedLearner learner, LearnerData learnerData) throws Exception
     {
         LearningStrategy strategy = new StaticStrategy(learnerData);
-
-        System.out.println("Calculating accuracy on separate test set...");
-        System.out.println("Test set name: " + learnerData.getEvalParameter());
-        System.out.println("Number of test instances: " + strategy.getTestingData().rows());
         double startTime = System.currentTimeMillis();
         learner.train(strategy);
         double elapsedTime = System.currentTimeMillis() - startTime;
@@ -168,13 +162,6 @@ public class MLSystemManager
     private void calcRandom(SupervisedLearner learner, LearnerData learnerData) throws Exception
     {
         LearningStrategy strategy = new RandomStrategy(learnerData);
-        System.out.println("Calculating accuracy on a random hold-out set...");
-        double trainPercent = Double.parseDouble(learnerData.getEvalParameter());
-        if (trainPercent < 0 || trainPercent > 1)
-            throw new Exception("Percentage for random evaluation must be between 0 and 1");
-        System.out.println("Percentage used for training: " + trainPercent);
-        System.out.println("Percentage used for testing: " + (1 - trainPercent));
-        learnerData.getArffData().shuffle(learnerData.getRandom());
         Matrix testFeatures = strategy.getTestingFeatures();
         Matrix testLabels = strategy.getTestingLabels();
         double startTime = System.currentTimeMillis();

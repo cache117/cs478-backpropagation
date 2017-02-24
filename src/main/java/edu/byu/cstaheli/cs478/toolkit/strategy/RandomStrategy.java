@@ -19,6 +19,7 @@ public class RandomStrategy extends LearningStrategy
     {
         super(learnerData);
         rand = learnerData.getRandom();
+        System.out.println("Calculating accuracy on a random hold-out set...");
         trainPercent = Double.parseDouble(learnerData.getEvalParameter());
         if (getTrainPercent() < 0 || getTrainPercent() > 1)
             throw new Exception("Percentage for random evaluation must be between 0 and 1");

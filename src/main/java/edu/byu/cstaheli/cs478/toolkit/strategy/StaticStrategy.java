@@ -17,6 +17,9 @@ public class StaticStrategy extends LearningStrategy
         testData.loadArff(learnerData.getEvalParameter());
         if (learnerData.isNormalized())
             testData.normalize(); // BUG! This may normalize differently from the training data. It should use the same ranges for normalization!
+        System.out.println("Calculating accuracy on separate test set...");
+        System.out.println("Test set name: " + learnerData.getEvalParameter());
+        System.out.println("Number of test instances: " + getTestingData().rows());
     }
 
     @Override
