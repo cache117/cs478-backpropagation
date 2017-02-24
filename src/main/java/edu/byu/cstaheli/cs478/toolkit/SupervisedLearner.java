@@ -47,7 +47,7 @@ public abstract class SupervisedLearner
             validationAccuracy = calculateValidationSetAccuracy(strategy);
             //if the threshold validation accuracy is met, stop training, else continue
             keepTraining = !isThresholdValidationAccuracyMet(validationAccuracy, bestAccuracy);
-            if (bestAccuracy > validationAccuracy)
+            if (validationAccuracy > bestAccuracy)
             {
                 bestAccuracy = validationAccuracy;
             }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -26,10 +27,10 @@ class BackPropagationTest
         MLSystemManager manager = new MLSystemManager();
         String datasetsLocation = "src/test/resources/datasets/";
         System.out.println("Training");
-        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E training").split(" ");
+        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E training -V").split(" ");
         manager.run(args);
         System.out.println("Training");
-        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E training").split(" ");
+        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E training -V").split(" ");
         manager.run(args);
         System.out.println("Cross Fold Validation");
         args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E cross 25 -V").split(" ");
@@ -39,9 +40,8 @@ class BackPropagationTest
     @Test
     public void testAnalyzeInputRow() throws Exception
     {
-        List<InputWeight> inputWeights = getInputWeights();
-        List<Node> hiddenNodes = getHiddenNodes(inputWeights);
-        List<Node> outputNodes = getOutputNodes(inputWeights);
+        List<Node> hiddenNodes = getHiddenNodes(getInputWeights());
+        List<Node> outputNodes = getOutputNodes(getInputWeights());
 
         BackPropagation backPropagation = buildTestBackProp(hiddenNodes, outputNodes);
 
@@ -53,17 +53,16 @@ class BackPropagationTest
         hiddenNodes = backPropagation.getHiddenLayer();
         Node node = hiddenNodes.get(0);
         double weight = node.getInputWeight(0);
-        assertNumberBetween(weight, -.9, 1.1);
+        assertEquals(1, weight);
         outputNodes = backPropagation.getOutputLayer();
         node = outputNodes.get(0);
         weight = node.getInputWeight(1);
-        assertNumberBetween(weight, -.9, 1.1);
+        assertNumberBetween(weight, 1.00415, 1.00416);
         weight = node.getBiasWeight();
-        assertNumberBetween(weight, 1.00111, 1.00112);
+        assertNumberBetween(weight, 1.00568, 1.00569);
 
-        inputWeights = getInputWeights();
-        hiddenNodes = getHiddenNodes(inputWeights);
-        outputNodes = getOutputNodes(inputWeights);
+        hiddenNodes = getHiddenNodes(getInputWeights());
+        outputNodes = getOutputNodes(getInputWeights());
 
         backPropagation = buildTestBackProp(hiddenNodes, outputNodes);
 
@@ -73,12 +72,19 @@ class BackPropagationTest
         output = 0;
         backPropagation.analyzeInputRow(row, output);
         hiddenNodes = backPropagation.getHiddenLayer();
+        node = hiddenNodes.get(0);
+        weight = node.getInputWeight(0);
+        assertEquals(1, weight);
         outputNodes = backPropagation.getOutputLayer();
+        node = outputNodes.get(0);
+        weight = node.getInputWeight(1);
+        assertNumberBetween(weight, 1.00415, 1.00416);
+        weight = node.getBiasWeight();
+        assertNumberBetween(weight, 1.00568, 1.00569);
 
         //Real test
-        inputWeights = getInputWeights();
-        hiddenNodes = getHiddenNodes(inputWeights);
-        outputNodes = getOutputNodes(inputWeights);
+        hiddenNodes = getHiddenNodes(getInputWeights());
+        outputNodes = getOutputNodes(getInputWeights());
 
         backPropagation = buildTestBackProp(hiddenNodes, outputNodes);
 
@@ -88,7 +94,15 @@ class BackPropagationTest
         output = 1;
         backPropagation.analyzeInputRow(row, output);
         hiddenNodes = backPropagation.getHiddenLayer();
+        node = hiddenNodes.get(0);
+        weight = node.getInputWeight(0);
+        assertEquals(1, weight);
         outputNodes = backPropagation.getOutputLayer();
+        node = outputNodes.get(0);
+        weight = node.getInputWeight(1);
+        assertNumberBetween(weight, 1.00415, 1.00416);
+        weight = node.getBiasWeight();
+        assertNumberBetween(weight, 1.00568, 1.00569);
 
         row = new double[2];
         row[0] = 0;
@@ -96,7 +110,15 @@ class BackPropagationTest
         output = 0;
         backPropagation.analyzeInputRow(row, output);
         hiddenNodes = backPropagation.getHiddenLayer();
+        node = hiddenNodes.get(0);
+        weight = node.getInputWeight(0);
+        assertEquals(1, weight);
         outputNodes = backPropagation.getOutputLayer();
+        node = outputNodes.get(0);
+        weight = node.getInputWeight(1);
+        assertNumberBetween(weight, 1.00415, 1.00416);
+        weight = node.getBiasWeight();
+        assertNumberBetween(weight, 1.00568, 1.00569);
 
     }
 
@@ -106,6 +128,7 @@ class BackPropagationTest
         backPropagation = new BackPropagation(new Random(1234), new MLSystemManager());
         backPropagation.setHiddenLayer(hiddenNodes);
         backPropagation.setOutputLayer(outputNodes);
+        backPropagation.setLearningRate(1);
         return backPropagation;
     }
 

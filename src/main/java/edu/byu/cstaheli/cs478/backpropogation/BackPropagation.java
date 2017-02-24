@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class BackPropagation extends RandomLearner
 {
-    private static final int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 5;
+    private static final int EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT = 10;
 
     private List<Node> hiddenLayer;
     private List<Node> outputLayer;
@@ -67,16 +67,17 @@ public class BackPropagation extends RandomLearner
     protected void initializeWeights(int features, int outputs)
     {
         int numberOfNodesInHiddenLayer = getNumberOfNodesInHiddenLayer(features, outputs);
-        hiddenLayer = initializeLayer(features, numberOfNodesInHiddenLayer);
-        outputLayer = initializeLayer(numberOfNodesInHiddenLayer, outputs);
+        hiddenLayer = initializeLayer(numberOfNodesInHiddenLayer, features);
+        outputLayer = initializeLayer(outputs, numberOfNodesInHiddenLayer);
     }
 
-    private List<Node> initializeLayer(int nodes, int inputs)
+    private List<Node> initializeLayer(int nodesInLayer, int inputsToLayer)
     {
-        List<Node> layerNodes = new ArrayList<>(nodes);
-        for (int i = 0; i < nodes; ++i)
+        List<Node> layerNodes = new ArrayList<>(nodesInLayer);
+        for (int i = 0; i < nodesInLayer; ++i)
         {
-            layerNodes.add(new Node(inputs, getRandom()));
+            Node node = new Node(inputsToLayer, getRandom());
+            layerNodes.add(node);
         }
         return layerNodes;
     }

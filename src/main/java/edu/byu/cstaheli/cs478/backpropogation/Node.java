@@ -37,9 +37,9 @@ public class Node
         previousDeltaBiasWeight = 0;
     }
 
-    public static double calculateWeightDelta(double learningRate, double outputError, double input, double previousWeightDelta, double momentum)
+    public static double calculateWeightDelta(double learningRate, double error, double output, double previousWeightDelta, double momentum)
     {
-        return (previousWeightDelta * momentum) + (learningRate * input * outputError);
+        return (previousWeightDelta * momentum) + (learningRate * error * output);
     }
 
     private double getRandomWeight()
