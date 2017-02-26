@@ -6,16 +6,18 @@ package edu.byu.cstaheli.cs478.toolkit;
 
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public abstract class SupervisedLearner
 {
     private int totalEpochs;
-    private MLSystemManager manager;
     private double learningRate;
+    private String outputFile;
 
-    protected SupervisedLearner(MLSystemManager manager)
+    protected SupervisedLearner()
     {
         totalEpochs = 0;
-        this.setManager(manager);
         setLearningRate(.1);
     }
 
@@ -25,9 +27,11 @@ public abstract class SupervisedLearner
         Matrix trainingLabels = strategy.getTrainingLabels();
         initializeWeights(trainingFeatures.cols(), trainingLabels.valueCount(0));
         //Get a baseline accuracy
+        double trainingMSE = calcMeanSquaredError(trainingFeatures, trainingLabels);
+        double validationMSE = calcMeanSquaredError(strategy.getValidationFeatures(), strategy.getValidationLabels());
         double validationAccuracy = calculateValidationSetAccuracy(strategy);
         double bestAccuracy = validationAccuracy;
-        completeEpoch(0, validationAccuracy);
+        completeEpoch(0, trainingMSE, validationMSE, validationAccuracy);
         boolean keepTraining = true;
         //for each epoch
         while (keepTraining)
@@ -40,20 +44,28 @@ public abstract class SupervisedLearner
                 analyzeInputRow(trainingFeatures.row(i), trainingLabels.get(i, 0));
                 //propagate error through the network
                 //adjust the weights
-                //calculate the accuracy over training data
             }
+            //calculate the accuracy over training data
+            trainingMSE = calcMeanSquaredError(trainingFeatures, trainingLabels);
             //for each validation data instance
             //calculate the accuracy over the validation data
+            validationMSE = calcMeanSquaredError(strategy.getValidationFeatures(), strategy.getValidationLabels());
             validationAccuracy = calculateValidationSetAccuracy(strategy);
             //if the threshold validation accuracy is met, stop training, else continue
             keepTraining = !isThresholdValidationAccuracyMet(validationAccuracy, bestAccuracy);
-            if (validationAccuracy > bestAccuracy)
-            {
-                bestAccuracy = validationAccuracy;
-            }
+            bestAccuracy = getBestAccuracy(validationAccuracy, bestAccuracy);
             incrementTotalEpochs();
-            completeEpoch(getTotalEpochs(), validationAccuracy);
+            completeEpoch(getTotalEpochs(), trainingMSE, validationMSE, validationAccuracy);
         }
+    }
+
+    protected double getBestAccuracy(double newValue, double previousBest)
+    {
+        if (newValue > previousBest)
+        {
+            previousBest = newValue;
+        }
+        return previousBest;
     }
 
     // A feature vector goes in. A label vector comes out. (Some supervised
@@ -129,16 +141,6 @@ public abstract class SupervisedLearner
         ++this.totalEpochs;
     }
 
-    public MLSystemManager getManager()
-    {
-        return manager;
-    }
-
-    public void setManager(MLSystemManager manager)
-    {
-        this.manager = manager;
-    }
-
     public double getLearningRate()
     {
         return learningRate;
@@ -149,16 +151,34 @@ public abstract class SupervisedLearner
         this.learningRate = learningRate;
     }
 
-    protected void completeEpoch(int epoch, double currentAccuracy)
+    protected void completeEpoch(int epoch, double classificationAccuracy)
     {
-        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        if (outputFile != null)
         {
-            writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
+            try (FileWriter writer = new FileWriter(outputFile, true))
+            {
+                writer.append(String.format("%s, %s\n", epoch, classificationAccuracy));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch (IOException e)
+    }
+
+    protected void completeEpoch(int epoch, double trainingMSE, double validationMSE, double classificationAccuracy)
+    {
+        if (outputFile != null)
         {
-            e.printStackTrace();
-        }*/
+            try (FileWriter writer = new FileWriter(outputFile, true))
+            {
+                writer.append(String.format("%s, %s, %s, %s\n", epoch, trainingMSE, validationMSE, classificationAccuracy));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected double calculateValidationSetAccuracy(LearningStrategy strategy) throws Exception
@@ -176,15 +196,29 @@ public abstract class SupervisedLearner
 
     public abstract void writeAccuraciesAndFinalWeights(double trainAccuracy, double testAccuracy);
 
-    public void completeEpoch()
+    private double calcMeanSquaredError(Matrix features, Matrix labels) throws Exception
     {
-        /*try (FileWriter writer = new FileWriter("datasets/accuracyVsEpochs.csv", true))
+        assert features.rows() == labels.rows();
+        double mse = 0;
+        for (int i = 0; i < features.rows(); ++i)
         {
-            writer.append(String.format("%s, %s\n", epoch, trainingAccuracy));
+            double[] row = features.row(i);
+            double output = labels.get(i, 0);
+            double[] label = new double[1];
+            predict(row, label);
+            double predicted = label[0];
+            mse += calcMeanSquaredError(output, predicted);
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }*/
+        return mse / features.rows();
+    }
+
+    private double calcMeanSquaredError(double expected, double actual)
+    {
+        return (expected * actual) * (expected * actual);
+    }
+
+    public void setOutputFile(String outputFile)
+    {
+        this.outputFile = outputFile;
     }
 }

@@ -1,6 +1,5 @@
 package edu.byu.cstaheli.cs478.backpropogation;
 
-import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
@@ -22,9 +21,9 @@ public class BackPropagation extends RandomLearner
     private int epochsWithoutSignificantImprovement;
     private double momentum;
 
-    public BackPropagation(Random rand, MLSystemManager manager)
+    public BackPropagation(Random rand)
     {
-        super(rand, manager);
+        super(rand);
         momentum = 0;
     }
 
@@ -164,12 +163,14 @@ public class BackPropagation extends RandomLearner
 
     private int getNumberOfNodesInHiddenLayer(int features, int outputs)
     {
-        return (features * 2) + outputs;
+//        return (features * 2) + outputs;
+        return (features * 2);
     }
 
     protected boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy)
     {
         if (validationAccuracy <= bestAccuracy)
+        //if (validationAccuracy <= bestAccuracy)
         {
             if (++epochsWithoutSignificantImprovement >= EPOCHS_WITHOUT_SIGNIFICANT_IMPROVEMENT)
             {
@@ -221,5 +222,15 @@ public class BackPropagation extends RandomLearner
             }
         }
         return index;
+    }
+
+    @Override
+    protected double getBestAccuracy(double newValue, double previousBest)
+    {
+        if (newValue > previousBest)
+        {
+            previousBest = newValue;
+        }
+        return previousBest;
     }
 }

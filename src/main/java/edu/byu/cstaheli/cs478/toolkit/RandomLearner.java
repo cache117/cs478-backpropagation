@@ -9,9 +9,9 @@ public abstract class RandomLearner extends SupervisedLearner
 {
     private RandomWeightGenerator random;
 
-    public RandomLearner(Random random, MLSystemManager manager)
+    public RandomLearner(Random random)
     {
-        super(manager);
+        super();
         this.setRandom(random);
     }
 

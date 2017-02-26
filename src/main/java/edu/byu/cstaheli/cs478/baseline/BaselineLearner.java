@@ -20,7 +20,7 @@ public class BaselineLearner extends SupervisedLearner
 
     public BaselineLearner()
     {
-        super(null);
+        super();
     }
 
     @Override

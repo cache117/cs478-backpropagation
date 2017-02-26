@@ -39,9 +39,9 @@ public class MLSystemManager
             case "baseline":
                 return new BaselineLearner();
             case "perceptron":
-                return new Perceptron(rand, this);
+                return new Perceptron(rand);
             case "backpropagation":
-                return new BackPropagation(rand, this);
+                return new BackPropagation(rand);
 //            case "neuralnet":
 //                return new NeuralNet(rand);
 //            case "decisiontree":

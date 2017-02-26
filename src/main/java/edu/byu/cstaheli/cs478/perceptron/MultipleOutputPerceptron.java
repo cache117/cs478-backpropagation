@@ -14,7 +14,7 @@ public class MultipleOutputPerceptron extends Perceptron
 
     public MultipleOutputPerceptron(Random rand, MLSystemManager manager, double wantedLabelIndex)
     {
-        super(rand, manager);
+        super(rand);
         this.wantedLabelIndex = wantedLabelIndex;
     }
 

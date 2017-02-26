@@ -1,6 +1,5 @@
 package edu.byu.cstaheli.cs478.perceptron;
 
-import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import edu.byu.cstaheli.cs478.toolkit.Matrix;
 import edu.byu.cstaheli.cs478.toolkit.RandomLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
@@ -16,11 +15,10 @@ public class Perceptron extends RandomLearner
     private double[] weights;
     private int epochsWithoutSignificantImprovement;
 
-    public Perceptron(Random rand, MLSystemManager manager)
+    public Perceptron(Random rand)
     {
-        super(rand, manager);
+        super(rand);
         setLearningRate(.1);
-        this.setManager(manager);
     }
 
     @Override

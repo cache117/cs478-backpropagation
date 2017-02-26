@@ -3,6 +3,7 @@ package edu.byu.cstaheli.cs478.backpropogation;
 import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,10 +37,67 @@ class BackPropagationTest
 //        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E cross 25").split(" ");
 //        manager.run(args);
         System.out.println("");
-        args = ("-L backpropagation -A " + datasetsLocation + "iris.arff -E random .75").split(" ");
-        manager.run(args);
-        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E random .75").split(" ");
-        manager.run(args);
+        BackPropagation backPropagation = new BackPropagation(new Random(1234));
+//        assertTrue((new File(datasetsLocation + "irisResults.csv").delete()));
+//        backPropagation.setOutputFile(datasetsLocation + "irisResults.csv");
+//        manager.setLearner(backPropagation);
+//        args = ("-L backpropagation -A " + datasetsLocation + "iris.arff -E random .75").split(" ");
+//        manager.run(args);
+//        backPropagation = new BackPropagation(new Random(1234));
+//        assertTrue((new File(datasetsLocation + "vowelResults.csv").delete()));
+//        backPropagation.setOutputFile(datasetsLocation + "vowelResults.csv");
+//        manager.setLearner(backPropagation);
+//        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E random .75").split(" ");
+//        manager.run(args);
+        assertTrue((new File(datasetsLocation + "modifiedVowelResults.csv").delete()));
+        for (int i = 0; i < 3; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setOutputFile(datasetsLocation + "modifiedVowelResults.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(datasetsLocation + "modifiedVowel1.csv").delete()));
+        for (int i = 0; i < 3; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setOutputFile(datasetsLocation + "modifiedVowel1.csv");
+            backPropagation.setLearningRate(.5);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(datasetsLocation + "modifiedVowel2.csv").delete()));
+        for (int i = 0; i < 3; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setOutputFile(datasetsLocation + "modifiedVowel2.csv");
+            backPropagation.setLearningRate(.001);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(datasetsLocation + "modifiedVowel3.csv").delete()));
+        for (int i = 0; i < 3; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setOutputFile(datasetsLocation + "modifiedVowel3.csv");
+            backPropagation.setLearningRate(1);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(datasetsLocation + "modifiedVowel4.csv").delete()));
+        for (int i = 0; i < 3; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setOutputFile(datasetsLocation + "modifiedVowel4.csv");
+            backPropagation.setLearningRate(5);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
     }
 
     @Test
@@ -130,7 +188,7 @@ class BackPropagationTest
     private BackPropagation buildTestBackProp(List<Node> hiddenNodes, List<Node> outputNodes)
     {
         BackPropagation backPropagation;
-        backPropagation = new BackPropagation(new Random(1234), new MLSystemManager());
+        backPropagation = new BackPropagation(new Random(1234));
         backPropagation.setHiddenLayer(hiddenNodes);
         backPropagation.setOutputLayer(outputNodes);
         backPropagation.setLearningRate(1);
