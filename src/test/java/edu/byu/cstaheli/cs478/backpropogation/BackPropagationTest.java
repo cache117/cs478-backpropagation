@@ -247,6 +247,23 @@ class BackPropagationTest
         BackPropagation backPropagation;
         String[] args;
 
+        assertTrue((new File(outputLocation + "vowels0Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels0Momentum.csv");
+            backPropagation.setMomentum(0);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
         assertTrue((new File(outputLocation + "vowels001Momentum.csv").delete()));
         for (int i = 0; i < 5; ++i)
         {
