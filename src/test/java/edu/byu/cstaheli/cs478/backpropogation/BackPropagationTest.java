@@ -24,11 +24,11 @@ class BackPropagationTest
     @Test
     public void testBackPropagation() throws Exception
     {
-        String[] args;
-        MLSystemManager manager = new MLSystemManager();
-        String datasetsLocation = "src/test/resources/datasets/";
+//        String[] args;
+//        MLSystemManager manager = new MLSystemManager();
+//        String datasetsLocation = "src/test/resources/datasets/";
 //        System.out.println("Training");
-//        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E training -V").split(" ");
+//        args = ("-L backpropagation -A " + datasetsLocation + "nodeTests.arff -E training -V").split(" ");
 //        manager.run(args);
 //        System.out.println("Training");
 //        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E training -V").split(" ");
@@ -36,19 +36,37 @@ class BackPropagationTest
 //        System.out.println("Cross Fold Validation");
 //        args = ("-L backpropagation -A " + datasetsLocation + "voting.arff -E cross 25").split(" ");
 //        manager.run(args);
-        System.out.println("");
-        BackPropagation backPropagation = new BackPropagation(new Random(1234));
-//        assertTrue((new File(datasetsLocation + "irisResults.csv").delete()));
-//        backPropagation.setOutputFile(datasetsLocation + "irisResults.csv");
-//        manager.setLearner(backPropagation);
-//        args = ("-L backpropagation -A " + datasetsLocation + "iris.arff -E random .75").split(" ");
-//        manager.run(args);
-//        backPropagation = new BackPropagation(new Random(1234));
+//        testIrisDataSet();
+//        BackPropagation backPropagation = new BackPropagation(new Random(1234));
 //        assertTrue((new File(datasetsLocation + "vowelResults.csv").delete()));
 //        backPropagation.setOutputFile(datasetsLocation + "vowelResults.csv");
 //        manager.setLearner(backPropagation);
 //        args = ("-L backpropagation -A " + datasetsLocation + "vowel.arff -E random .75").split(" ");
 //        manager.run(args);
+//        testDifferentLearningRates();
+//        testNumberOfHiddenNodes();
+        testMomentumDifferences();
+    }
+
+    private void testIrisDataSet() throws Exception
+    {
+        BackPropagation backPropagation = new BackPropagation(new Random(1234));
+        MLSystemManager manager = new MLSystemManager();
+        String datasetsLocation = "src/test/resources/datasets/";
+        String[] args;
+        assertTrue((new File(datasetsLocation + "irisResults.csv").delete()));
+        backPropagation.setOutputFile(datasetsLocation + "irisResults.csv");
+        manager.setLearner(backPropagation);
+        args = ("-L backpropagation -A " + datasetsLocation + "iris.arff -E random .75").split(" ");
+        manager.run(args);
+    }
+
+    private void testDifferentLearningRates() throws Exception
+    {
+        MLSystemManager manager = new MLSystemManager();
+        String datasetsLocation = "src/test/resources/datasets/";
+        BackPropagation backPropagation;
+        String[] args;
         assertTrue((new File(datasetsLocation + "modifiedVowelResults.csv").delete()));
         for (int i = 0; i < 3; ++i)
         {
@@ -94,6 +112,239 @@ class BackPropagationTest
             backPropagation = new BackPropagation(new Random(1234));
             backPropagation.setOutputFile(datasetsLocation + "modifiedVowel4.csv");
             backPropagation.setLearningRate(5);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+    }
+
+    private void testNumberOfHiddenNodes() throws Exception
+    {
+        MLSystemManager manager = new MLSystemManager();
+        String outputLocation = "src/test/resources/datasets/nodeTests/";
+        String datasetsLocation = "src/test/resources/datasets/";
+        BackPropagation backPropagation;
+        String[] args;
+        assertTrue((new File(outputLocation + "vowels1Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 1; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels1Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels2Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 2; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels2Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels4Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 4; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels4Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels8Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 8; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels8Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels16Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 16; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels16Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels32Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 32; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels32Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels64Node.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 64; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels64Node.csv");
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+    }
+
+    private void testMomentumDifferences() throws Exception
+    {
+        MLSystemManager manager = new MLSystemManager();
+        String outputLocation = "src/test/resources/datasets/momentumTests/";
+        String datasetsLocation = "src/test/resources/datasets/";
+        BackPropagation backPropagation;
+        String[] args;
+
+        assertTrue((new File(outputLocation + "vowels001Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels001Momentum.csv");
+            backPropagation.setMomentum(.001);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels01Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels01Momentum.csv");
+            backPropagation.setMomentum(.01);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels1Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels1Momentum.csv");
+            backPropagation.setMomentum(.1);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels05Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels05Momentum.csv");
+            backPropagation.setMomentum(.5);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels10Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels10Momentum.csv");
+            backPropagation.setMomentum(1);
+            manager.setLearner(backPropagation);
+            args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
+            manager.run(args);
+        }
+        assertTrue((new File(outputLocation + "vowels50Momentum.csv").delete()));
+        for (int i = 0; i < 5; ++i)
+        {
+            backPropagation = new BackPropagation(new Random(1234));
+            backPropagation.setLearningRate(.7);
+            List<Node> hiddenLayer = new ArrayList<>(1);
+            for (int j = 0; j < 30; ++j)
+            {
+                hiddenLayer.add(new Node(10, 1234));
+            }
+            backPropagation.setHiddenLayer(hiddenLayer);
+            backPropagation.setOutputFile(outputLocation + "vowels50Momentum.csv");
+            backPropagation.setMomentum(5);
             manager.setLearner(backPropagation);
             args = ("-L backpropagation -A " + datasetsLocation + "modifiedVowel.arff -E random .75").split(" ");
             manager.run(args);

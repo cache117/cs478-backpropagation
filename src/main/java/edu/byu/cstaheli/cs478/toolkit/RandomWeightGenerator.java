@@ -7,25 +7,59 @@ import java.util.Random;
  */
 public class RandomWeightGenerator
 {
+    private static RandomWeightGenerator _instance;
     private Random random;
 
-    public RandomWeightGenerator(Random random)
+    private RandomWeightGenerator()
     {
-        this.random = random;
+        random = new Random();
     }
 
-    public RandomWeightGenerator(long seed)
+    public static RandomWeightGenerator getInstance()
     {
-        random = new Random(seed);
+        if (_instance == null)
+        {
+            _instance = new RandomWeightGenerator();
+        }
+        return _instance;
+    }
+
+    public static RandomWeightGenerator getInstance(long seed)
+    {
+        RandomWeightGenerator random = getInstance();
+        random.setRandom(seed);
+        return random;
+    }
+
+    public static RandomWeightGenerator getInstance(Random random)
+    {
+        RandomWeightGenerator generator = getInstance();
+        generator.setRandom(random);
+        return generator;
     }
 
     public double getRandomWeight()
     {
-        return random.nextDouble() - 0.5;
+        return getRandom().nextDouble() - 0.5;
     }
 
     public int getRandomInt(int bound)
     {
-        return random.nextInt(bound);
+        return getRandom().nextInt(bound);
+    }
+
+    public Random getRandom()
+    {
+        return random;
+    }
+
+    public void setRandom(long seed)
+    {
+        this.random = new Random(seed);
+    }
+
+    public void setRandom(Random random)
+    {
+        this.random = random;
     }
 }

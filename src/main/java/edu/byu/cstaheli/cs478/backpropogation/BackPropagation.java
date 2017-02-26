@@ -66,8 +66,14 @@ public class BackPropagation extends RandomLearner
     protected void initializeWeights(int features, int outputs)
     {
         int numberOfNodesInHiddenLayer = getNumberOfNodesInHiddenLayer(features, outputs);
-        hiddenLayer = initializeLayer(numberOfNodesInHiddenLayer, features);
-        outputLayer = initializeLayer(outputs, numberOfNodesInHiddenLayer);
+        if (hiddenLayer == null)
+        {
+            hiddenLayer = initializeLayer(numberOfNodesInHiddenLayer, features);
+        }
+        if (outputLayer == null)
+        {
+            outputLayer = initializeLayer(outputs, numberOfNodesInHiddenLayer);
+        }
     }
 
     private List<Node> initializeLayer(int nodesInLayer, int inputsToLayer)
@@ -75,7 +81,7 @@ public class BackPropagation extends RandomLearner
         List<Node> layerNodes = new ArrayList<>(nodesInLayer);
         for (int i = 0; i < nodesInLayer; ++i)
         {
-            Node node = new Node(inputsToLayer, getRandom());
+            Node node = new Node(inputsToLayer, 1234);
             layerNodes.add(node);
         }
         return layerNodes;
@@ -164,7 +170,14 @@ public class BackPropagation extends RandomLearner
     private int getNumberOfNodesInHiddenLayer(int features, int outputs)
     {
 //        return (features * 2) + outputs;
-        return (features * 2);
+        if (hiddenLayer == null)
+        {
+            return (features * 2);
+        }
+        else
+        {
+            return hiddenLayer.size();
+        }
     }
 
     protected boolean isThresholdValidationAccuracyMet(double validationAccuracy, double bestAccuracy)

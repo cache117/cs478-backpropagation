@@ -28,6 +28,6 @@ public abstract class RandomLearner extends SupervisedLearner
 
     protected void setRandom(Random random)
     {
-        this.random = new RandomWeightGenerator(random);
+        this.random = RandomWeightGenerator.getInstance(random);
     }
 }

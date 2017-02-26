@@ -11,6 +11,8 @@ import java.io.IOException;
 
 public abstract class SupervisedLearner
 {
+    private static final boolean OUTPUT_EACH_EPOCH = false;
+
     private int totalEpochs;
     private double learningRate;
     private String outputFile;
@@ -57,6 +59,9 @@ public abstract class SupervisedLearner
             incrementTotalEpochs();
             completeEpoch(getTotalEpochs(), trainingMSE, validationMSE, validationAccuracy);
         }
+        double testMSE = calcMeanSquaredError(strategy.getTestingFeatures(), strategy.getTestingLabels());
+        double testAccuracy = measureAccuracy(strategy.getTestingFeatures(), strategy.getTestingLabels(), new Matrix());
+        outputFinalAccuracies(getTotalEpochs(), trainingMSE, validationMSE, testMSE, validationAccuracy, testAccuracy);
     }
 
     protected double getBestAccuracy(double newValue, double previousBest)
@@ -153,7 +158,7 @@ public abstract class SupervisedLearner
 
     protected void completeEpoch(int epoch, double classificationAccuracy)
     {
-        if (outputFile != null)
+        if (outputFile != null && OUTPUT_EACH_EPOCH)
         {
             try (FileWriter writer = new FileWriter(outputFile, true))
             {
@@ -168,11 +173,26 @@ public abstract class SupervisedLearner
 
     protected void completeEpoch(int epoch, double trainingMSE, double validationMSE, double classificationAccuracy)
     {
-        if (outputFile != null)
+        if (outputFile != null && OUTPUT_EACH_EPOCH)
         {
             try (FileWriter writer = new FileWriter(outputFile, true))
             {
                 writer.append(String.format("%s, %s, %s, %s\n", epoch, trainingMSE, validationMSE, classificationAccuracy));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void outputFinalAccuracies(int epoch, double trainingMSE, double validationMSE, double testMSE, double validationClassificationAccuracy, double testClassificationAccuracy)
+    {
+        if (outputFile != null)
+        {
+            try (FileWriter writer = new FileWriter(outputFile, true))
+            {
+                writer.append(String.format("%s, %s, %s, %s, %s, %s\n", epoch, trainingMSE, validationMSE, testMSE, validationClassificationAccuracy, testClassificationAccuracy));
             }
             catch (IOException e)
             {

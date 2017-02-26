@@ -4,7 +4,6 @@ import edu.byu.cstaheli.cs478.toolkit.RandomWeightGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by cstaheli on 2/16/2017.
@@ -16,15 +15,15 @@ public class Node
      * <p>
      * This node is initialized with zeros for weights;
      */
-    protected static final Node ZERO_NODE = new Node(0, new RandomWeightGenerator(new Random(1234)));
+    protected static final Node ZERO_NODE = new Node(0, 1234);
     private double biasWeight;
     private double previousDeltaBiasWeight;
     private List<InputWeight> inputWeights;
     private RandomWeightGenerator random;
 
-    public Node(int numberOfInputs, RandomWeightGenerator random)
+    public Node(int numberOfInputs, long seed)
     {
-        this.random = random;
+        this.random = RandomWeightGenerator.getInstance(seed);
         generateWeights(numberOfInputs);
         this.biasWeight = getRandomWeight();
         previousDeltaBiasWeight = 0;
